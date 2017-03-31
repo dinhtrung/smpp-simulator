@@ -11,9 +11,122 @@ angular.module('jsClientApp')
   .controller('MainCtrl', function ($scope, $rootScope, $timeout, $log, smppParametersService, smppTestingService, cF) {
     $scope.smppCof = {};
     $scope.isStartSession = false;
+    $scope.listMessage = [];
+    $scope.isRandomBulkMessages = true;
+    $scope.portForPcapParsing = null;
 
+    $scope.addMessageToList = function (message) {
+      if(cF.isNotNull(message)){
+        $scope.listMessage.push(message);
+      }
 
+    };
 
+    $scope.commonGetResult = function (data) {
+      cF.closeWaitingDialog();
+      var result = data.data;
+      if (result.codeStatus < 1) {
+        cF.showDialogOneBt('ERROR', 'SYSTEM ERROR!', 'btn-danger', 'fa fa-exclamation-triangle', cF.goToLoginScreen);
+      } else {
+        switch (result.codeStatus) {
+          //ADD_MESSAGE = 1;
+          case 1:
+            $scope.addMessageToList(result.data);
+            break;
+          //REFRESH_STATE = 2;
+          case 2:
+            $scope.addMessageToList(result.data);
+            break;
+          // SESSION_START_FALSE = 3;
+          case 3:
+            $scope.isStartSession = false;
+            $scope.addMessageToList(result.data);
+            break;
+          //SESSION_START_SUCCESS = 4;
+          case 4:
+            $scope.isStartSession = true;
+            $scope.addMessageToList(result.data);
+            break;
+          //SESSION_STOP = 5;
+          case 5:
+            $scope.isStartSession = false;
+            $scope.addMessageToList(result.data);
+            break;
+          // MESSAGE_SUBMIT_FALSE = 6;
+          case 6:
+            $scope.addMessageToList(result.data);
+            break;
+          default:
+            $scope.addMessageToList(result.data);
+            break;
+        }
+      }
+    };
+
+    $scope.clickBtStartASession = function () {
+      cF.showWaitingDialog();
+      smppTestingService.startASession().then(
+        function (data) {
+          cF.closeWaitingDialog();
+          //TODO ....
+        }, function (error) {
+          $log.error(error);
+          cF.showDialogSystemError();
+        });
+
+    };
+
+    $scope.clickBtStopSession = function () {
+      cF.showWaitingDialog();
+      smppTestingService.stopASession().then(
+        function (data) {
+          cF.closeWaitingDialog();
+          //TODO ....
+        }, function (error) {
+          $log.error(error);
+          cF.showDialogSystemError();
+        });
+
+    };
+
+    $scope.clickBtRefreshState = function () {
+      cF.showWaitingDialog();
+      smppTestingService.refreshState().then(
+        function (data) {
+          cF.closeWaitingDialog();
+          //TODO ....
+        }, function (error) {
+          $log.error(error);
+          cF.showDialogSystemError();
+        });
+
+    };
+
+    $scope.clickBtSendBadPacket = function () {
+      cF.showWaitingDialog();
+      smppTestingService.sendBadPacket().then(
+        function (data) {
+          cF.closeWaitingDialog();
+          //TODO ....
+        }, function (error) {
+          $log.error(error);
+          cF.showDialogSystemError();
+        });
+
+    };
+
+    $scope.clickBtSubmitMessage = function () {
+      cF.showWaitingDialog();
+      smppTestingService.submitMessage().then(
+        function (data) {
+          cF.closeWaitingDialog();
+          //TODO ....
+        }, function (error) {
+          $log.error(error);
+          cF.showDialogSystemError();
+        });
+
+    };
 
     //======================================DIALOG SMMPP CONFIGURE=====================================//
     $scope.listSNpi = ['Unknown', 'ISDN', 'Data', 'Telex', 'Land_Mobile', 'National', 'Private', 'ERMES', 'Internet_IP', 'WAP_Client_Id'];
@@ -47,7 +160,7 @@ angular.module('jsClientApp')
     $scope.saveSmppConfigure = function () {
       $scope.hiddenMessageStatus();
       if (cF.validateAllOfFrom($scope.nameDialogSmppConfigure)) {
-        $scope.showMessageSmppConfigure(1,'Some field are invalid, please check again');
+        $scope.showMessageSmppConfigure(1, 'Some field are invalid, please check again');
         // $('#divShowMessageSmppConfigure').focus();
         return;
       }

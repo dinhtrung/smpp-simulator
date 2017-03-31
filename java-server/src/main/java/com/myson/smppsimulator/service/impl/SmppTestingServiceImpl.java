@@ -83,7 +83,7 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 	private static Charset ucs2Charset = Charset.forName("UTF-16BE");
 	private static Charset isoCharset = Charset.forName("ISO-8859-1");
 	private static Charset gsm7Charset = new GSMCharset("GSM", new String[] {});
-	
+
 	private AtomicLong msgIdGenerator;
 
 	private ThreadPoolExecutor executor;
@@ -113,27 +113,28 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 	}
 
 	private int count = 1;
-	
+
 	@Scheduled(fixedRate = 2000)
 	public void scheduledAddMessage() {
-		String s = "debug "+count;
-		addMessage(s, s);
+		String s = "debug " + count;
+		addMessage(CodeStatusUtil.ADD_MESSAGE, s, s);
 		count++;
 	}
+	
+	public void addMessage(String msg, String info){
+		addMessage(CodeStatusUtil.ADD_MESSAGE, msg, info);
+	}
 
-	// @Scheduled(fixedRate = 5000)
-	public void addMessage(String msg, String info) {
-		// Thread.sleep(1000); // simulated delay
+	public void addMessage(Integer codeStatus, String msg, String info) {
 		SmppMessage sms = new SmppMessage();
-
 		try {
 			String sDate = StringUtils.convertDateToString(new Date(), Constants.FORMAT_DATE_YYYY_MM_DD_HH_MM_SS);
 			sms.setInfo(info);
 			sms.setMsg(msg);
 			sms.setTimeStamp(sDate);
-			System.out.println("Scheduled sms:\t"+sms);
+			System.out.println("Scheduled sms:\t" + sms);
 			ResReturnDTO returnDTO = new ResReturnDTO();
-			returnDTO.setCodeStatus(CodeStatusUtil.ADD_MESSAGE);
+			returnDTO.setCodeStatus(codeStatus);
 			returnDTO.setData(sms);
 			this.template.convertAndSend("/app/hello", returnDTO);
 		} catch (ParseException e) {
@@ -142,7 +143,7 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 		}
 
 	}
-	
+
 	@Override
 	public ResReturnDTO refreshState() {
 		String message = "messageSegmentsSent=" + this.segmentsSent.get() + ", submitMessagesSent="
@@ -159,7 +160,7 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 		doSendBadPacket();
 		return null;
 	}
-	
+
 	private void doSendBadPacket() {
 		// TODO: ..............................
 		SubmitSm submitSm = new SubmitSm();
@@ -171,6 +172,7 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 			e.printStackTrace();
 		}
 	}
+
 	@Override
 	public ResReturnDTO startASession() {
 		start();
@@ -183,8 +185,8 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 		this.responsesRcvd = new AtomicInteger();
 		this.messagesRcvd = new AtomicInteger();
 
-		this.addMessage("Trying to start a new " + smppParametersService.getCofGeneralParameters().getSmppSessionType()
-				+ " session", "");
+		this.addMessage(CodeStatusUtil.ADD_MESSAGE, "Trying to start a new "
+				+ smppParametersService.getCofGeneralParameters().getSmppSessionType() + " session", "");
 
 		this.executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 		this.monitorExecutor = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(1, new ThreadFactory() {
@@ -224,14 +226,14 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 			try {
 				session0 = clientBootstrap.bind(config0, sessionHandler);
 			} catch (Exception e) {
-				this.addMessage("Failure to start a new session", e.toString());
+				this.addMessage(CodeStatusUtil.SESSION_START_FALSE, "Failure to start a new session", e.toString());
 				return;
 			}
 
 			// enableStart(false);
 			// setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 
-			this.addMessage("Session has been successfully started", "");
+			this.addMessage(CodeStatusUtil.SESSION_START_SUCCESS, "Session has been successfully started", "");
 		} else {
 
 			SmppServerConfiguration configuration = new SmppServerConfiguration();
@@ -259,14 +261,15 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 			try {
 				this.defaultSmppServer.start();
 			} catch (SmppChannelException e1) {
-				this.addMessage("Failure to start a defaultSmppServer", e1.toString());
+				this.addMessage(CodeStatusUtil.SESSION_START_FALSE, "Failure to start a defaultSmppServer",
+						e1.toString());
 				return;
 			}
 
 			// enableStart(false);
 			// setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 
-			this.addMessage("SMPP Server has been successfully started", "");
+			this.addMessage(CodeStatusUtil.SESSION_START_SUCCESS, "SMPP Server has been successfully started", "");
 
 		}
 	}
@@ -276,6 +279,7 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 		doStop();
 		return null;
 	}
+
 	public void doStop() {
 		try {
 			if (this.session0 != null) {
@@ -306,27 +310,26 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 			// enableStart(true);
 			// setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
-			this.addMessage("Session has been stopped", "");
+			this.addMessage(CodeStatusUtil.SESSION_STOP, "Session has been stopped", "");
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
 
 	}
 
-	
 	@Override
-	public ResReturnDTO submitMessage(){
+	public ResReturnDTO submitMessage() {
 		doSubmitMessage(smppParametersService.getCofGeneralParameters().getEncodingType(),
-				smppParametersService.getCofGeneralParameters().getMessageClass(), 
+				smppParametersService.getCofGeneralParameters().getMessageClass(),
 				smppParametersService.getCofGeneralParameters().getMessageText(),
-				smppParametersService.getCofGeneralParameters().getSplittingType(), 
-				smppParametersService.getCofGeneralParameters().getValidityType(), 
+				smppParametersService.getCofGeneralParameters().getSplittingType(),
+				smppParametersService.getCofGeneralParameters().getValidityType(),
 				smppParametersService.getCofGeneralParameters().getDestAddress(),
-				smppParametersService.getCofGeneralParameters().getMessagingMode(), 
+				smppParametersService.getCofGeneralParameters().getMessagingMode(),
 				smppParametersService.getCofGeneralParameters().getSpecifiedSegmentLength());
 		return null;
 	}
-	
+
 	private void doSubmitMessage(EncodingType encodingType, int messageClass, String messageText,
 			SplittingType splittingType, ValidityType validityType, String destAddr,
 			SmppSimulatorParameters.MessagingMode messagingMode, int specifiedSegmentLength) {
@@ -471,19 +474,20 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 			this.doSubmitMessage(dcs, msgLst, msgRef, addSegmTlv, esmClass, validityType, segmCnt, destAddr,
 					messageClassVal);
 		} catch (Exception e) {
-			this.addMessage("Failure to submit message", e.toString());
+			this.addMessage(CodeStatusUtil.MESSAGE_SUBMIT_FALSE, "Failure to submit message", e.toString());
 			return;
 		}
 	}
-	
+
 	private int msgRef = 0;
+
 	private int getNextMsgRef() {
 		msgRef++;
 		if (msgRef > 255)
 			msgRef = 1;
 		return msgRef;
 	}
-	
+
 	private ArrayList<String> splitStr(String buf, int maxLen) {
 		ArrayList<String> res = new ArrayList<String>();
 
@@ -541,34 +545,45 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 				return;
 			}
 
-			pdu.setSourceAddress(new Address((byte) smppParametersService.getCofGeneralParameters().getSourceTON().getCode(),
-					(byte) smppParametersService.getCofGeneralParameters().getSourceNPI().getCode(), smppParametersService.getCofGeneralParameters().getSourceAddress()));
+			pdu.setSourceAddress(
+					new Address((byte) smppParametersService.getCofGeneralParameters().getSourceTON().getCode(),
+							(byte) smppParametersService.getCofGeneralParameters().getSourceNPI().getCode(),
+							smppParametersService.getCofGeneralParameters().getSourceAddress()));
 
-			if (smppParametersService.getCofGeneralParameters().getSendingMessageType() == SendingMessageType.SubmitMulti) {
+			if (smppParametersService.getCofGeneralParameters()
+					.getSendingMessageType() == SendingMessageType.SubmitMulti) {
 				long daOrig = 1;
 				try {
 					daOrig = Long.parseLong(destAddr);
 				} catch (Exception e) {
 
 				}
-				for (int i2 = 0; i2 < smppParametersService.getCofGeneralParameters().getSubmitMultiMessageCnt(); i2++) {
+				for (int i2 = 0; i2 < smppParametersService.getCofGeneralParameters()
+						.getSubmitMultiMessageCnt(); i2++) {
 					// this code can be used for testing of address rejections
 					// if(i2 == 0){
 					// ((SubmitMulti) pdu).addDestAddresses(new Address((byte)
-					// 8, (byte) smppParametersService.getCofGeneralParameters().getDestNPI().getCode(), String
+					// 8, (byte)
+					// smppParametersService.getCofGeneralParameters().getDestNPI().getCode(),
+					// String
 					// .valueOf(daOrig + i2)));
 					// }else {
 					// ((SubmitMulti) pdu).addDestAddresses(new Address((byte)
-					// smppParametersService.getCofGeneralParameters().getDestTON().getCode(), (byte)
-					// smppParametersService.getCofGeneralParameters().getDestNPI().getCode(), String
+					// smppParametersService.getCofGeneralParameters().getDestTON().getCode(),
+					// (byte)
+					// smppParametersService.getCofGeneralParameters().getDestNPI().getCode(),
+					// String
 					// .valueOf(daOrig + i2)));
 					// }
 
-					((SubmitMulti) pdu).addDestAddresses(new Address((byte) smppParametersService.getCofGeneralParameters().getDestTON().getCode(),
-							(byte) smppParametersService.getCofGeneralParameters().getDestNPI().getCode(), String.valueOf(daOrig + i2)));
+					((SubmitMulti) pdu).addDestAddresses(
+							new Address((byte) smppParametersService.getCofGeneralParameters().getDestTON().getCode(),
+									(byte) smppParametersService.getCofGeneralParameters().getDestNPI().getCode(),
+									String.valueOf(daOrig + i2)));
 				}
 			} else {
-				pdu.setDestAddress(new Address((byte) smppParametersService.getCofGeneralParameters().getDestTON().getCode(),
+				pdu.setDestAddress(new Address(
+						(byte) smppParametersService.getCofGeneralParameters().getDestTON().getCode(),
 						(byte) smppParametersService.getCofGeneralParameters().getDestNPI().getCode(), destAddr));
 			}
 
@@ -587,10 +602,11 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 			}
 
 			pdu.setDataCoding((byte) dcs);
-			pdu.setRegisteredDelivery((byte) smppParametersService.getCofGeneralParameters().getMcDeliveryReceipt().getCode());
+			pdu.setRegisteredDelivery(
+					(byte) smppParametersService.getCofGeneralParameters().getMcDeliveryReceipt().getCode());
 
-			if (buf.length < 250
-					&& smppParametersService.getCofGeneralParameters().getSendingMessageType() != SmppSimulatorParameters.SendingMessageType.DataSm)
+			if (buf.length < 250 && smppParametersService.getCofGeneralParameters()
+					.getSendingMessageType() != SmppSimulatorParameters.SendingMessageType.DataSm)
 				pdu.setShortMessage(buf);
 			else {
 				Tlv tlv = new Tlv(SmppConstants.TAG_MESSAGE_PAYLOAD, buf);
@@ -623,13 +639,12 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 
 			this.messagesSent.incrementAndGet();
 			if (this.timer == null) {
-				this.addMessage("Request=" + pdu.getName(), pdu.toString());
+				this.addMessage(CodeStatusUtil.ADD_MESSAGE,"Request=" + pdu.getName(), pdu.toString());
 			}
 		}
 
 		this.segmentsSent.addAndGet(segmentCnt);
 	}
-
 
 	private byte[] encodeSegment(String msg, EncodingType encodingType) {
 		if (encodingType == EncodingType.GSM8_DCS_4) {
@@ -655,7 +670,7 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 			}
 		}
 	}
-	
+
 	private void doStopTimer() {
 		if (this.timer != null) {
 			for (Timer tm : this.timer) {
@@ -664,19 +679,21 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 			this.timer = null;
 		}
 	}
+
 	private boolean isStartBulk = false;
 	private int threadCount = 10;
-	
+
 	@Override
-	public ResReturnDTO stopBulkSending(){
+	public ResReturnDTO stopBulkSending() {
 		this.doStopTimer();
 		isStartBulk = false;
 		return null;
 	}
+
 	@Override
-	public ResReturnDTO bulkSendingRandom(){
+	public ResReturnDTO bulkSendingRandom() {
 		this.doStopTimer();
-		
+
 		this.timer = new Timer[threadCount];
 		for (int i1 = 0; i1 < threadCount; i1++) {
 			this.timer[i1] = new Timer();
@@ -688,17 +705,20 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 			}, 1 * 1000, 1 * 1000);
 		}
 		isStartBulk = false;
-		return null; //TODO
+		return null; // TODO
 	}
-	
+
 	private String bigMessage = "01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789";
 	private AtomicInteger messagesNum = new AtomicInteger();
+
 	private void doSendRandomSmppMessages() {
 
 		Random rand = new Random();
 
-		for (int i1 = 0; i1 < smppParametersService.getCofGeneralParameters().getBulkMessagePerSecond() / threadCount; i1++) {
-			int n = smppParametersService.getCofGeneralParameters().getBulkDestAddressRangeEnd() - smppParametersService.getCofGeneralParameters().getBulkDestAddressRangeStart() + 1;
+		for (int i1 = 0; i1 < smppParametersService.getCofGeneralParameters().getBulkMessagePerSecond()
+				/ threadCount; i1++) {
+			int n = smppParametersService.getCofGeneralParameters().getBulkDestAddressRangeEnd()
+					- smppParametersService.getCofGeneralParameters().getBulkDestAddressRangeStart() + 1;
 			if (n < 1)
 				n = 1;
 			int j1 = rand.nextInt(n);
@@ -731,17 +751,15 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 				msg = bigMessage;
 			msg += " " + ((Integer) messagesNum.incrementAndGet()).toString();
 
-			this.doSubmitMessage(encodingType, 0, msg, splittingType, 
-					smppParametersService.getCofGeneralParameters().getValidityType(), 
-					destAddrS,
-					smppParametersService.getCofGeneralParameters().getMessagingMode(), 
+			this.doSubmitMessage(encodingType, 0, msg, splittingType,
+					smppParametersService.getCofGeneralParameters().getValidityType(), destAddrS,
+					smppParametersService.getCofGeneralParameters().getMessagingMode(),
 					smppParametersService.getCofGeneralParameters().getSpecifiedSegmentLength());
 		}
 	}
-	
-	
+
 	@Override
-	public ResReturnDTO bulkSendingFromPcapFile(final MultipartFile file,final int port) {
+	public ResReturnDTO bulkSendingFromPcapFile(final MultipartFile file, final int port) {
 		isStartBulk = false;
 		Thread t = new Thread(new Runnable() {
 			@Override
@@ -753,24 +771,24 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 
 		return null;
 	}
-	
-	private void doParsePcapFile(MultipartFile file, int port){
+
+	private void doParsePcapFile(MultipartFile file, int port) {
 		try {
 			InputStream inputStream = file.getInputStream();
-			
+
 			SmppPcapParser smppPcapParser = new SmppPcapParser(this, inputStream, port);
 
 			smppPcapParser.parse();
 			inputStream.close();
-			
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
-			this.isStartBulk =true;
+			this.isStartBulk = true;
 		}
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	@Override
 	public void onNewSmppRequest(BaseSm pdu) throws Exception {
@@ -802,7 +820,5 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 	public AtomicLong getMsgIdGenerator() {
 		return msgIdGenerator;
 	}
-
-	
 
 }

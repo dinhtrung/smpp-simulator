@@ -419,18 +419,22 @@ angular.module('jsClientApp').factory("cF", function ($location, $rootScope, $co
     $(".modalCircularGPr").hide();
   };
 
-  obj.showDialogOneBt = function (message, confirmButtonClass, iconClass, functionConfirm) {
+  obj.showDialogOneBt = function (title, message, confirmButtonClass, iconClass, functionConfirm) {
     obj.closeWaitingDialog();
     $.confirm({
       icon: iconClass,
-      title: message,
-      confirmButton: 'OK',
-      cancelButton: false,
-      confirmButtonClass: confirmButtonClass,
-      content: false,
+      title: false,
+      buttons: {
+        confirmButton: {
+          text: 'OK',
+          btnClass: confirmButtonClass,
+          keys: ['enter', 'shift'],
+          action: functionConfirm
+        }
+      },
+      content: message,
       backgroundDismiss: false,
-      columnClass: 'col-md-4 col-md-offset-4',
-      confirm: functionConfirm
+      columnClass: 'col-md-4 col-md-offset-4'
     });
   };
 
@@ -440,47 +444,35 @@ angular.module('jsClientApp').factory("cF", function ($location, $rootScope, $co
   };
   obj.showDialogSystemError = function () {
 
-    obj.showDialogOneBt('SYSTEM ERROR!', 'btn-danger', 'fa fa-exclamation-triangle', obj.goToLoginScreen);
+    obj.showDialogOneBt('ERROR','SYSTEM ERROR!', 'btn-danger', 'fa fa-exclamation-triangle', obj.goToLoginScreen);
 
   };
 
   obj.showDialogError = function (message) {
-    obj.showDialogOneBt(message, 'btn-danger', 'fa fa-exclamation-triangle', obj.goToLoginScreen);
+    obj.showDialogOneBt('ERROR',message, 'btn-danger', 'fa fa-exclamation-triangle', obj.goToLoginScreen);
 
   };
 
   obj.showDialogSuccess = function (message) {
-    obj.showDialogOneBt(message, 'btn-success', 'fa fa-check-square', function () {
+    obj.showDialogOneBt('SUCCESS',message, 'btn-success', 'fa fa-check-square', function () {
     });
 
   };
 
   obj.haveErrorResult = function (result) {
-    return obj.isNotNull(result) && obj.isNotNull(result.codeStatus) && (result.codeStatus >= 0);
+    return obj.isNotNull(result) && obj.isNotNull(result.codeStatus) && (result.codeStatus <= 0);
   };
 
   obj.isShowDialogErrorResult = function (result) {
-    return obj.haveErrorResult(result) && (result.codeStatus === 0 || result.codeStatus === 1 || result.codeStatus === 2);
+    return obj.haveErrorResult(result);
   };
 
   obj.showDialogErrorResult = function (result) {
     if (obj.isShowDialogErrorResult(result)) {
-      obj.showDialogOneBt(result.messageStatus, 'btn-success', 'fa fa-check-square', obj.goToLoginScreen);
+      obj.showDialogOneBt('ERROR',result.messageStatus, 'btn-success', 'fa fa-check-square', obj.goToLoginScreen);
       return true;
     }
     return false;
-  };
-
-  obj.showDialogConfirmDelete = function (title, objectName, confirmFucion) {
-    $.confirm({
-      icon: 'fa fa-exclamation-triangle',
-      title: title,
-      confirmButton: 'Delete',
-      cancelButton: 'Cancel',
-      confirmButtonClass: 'btn-danger',
-      content: "This action will permanently delete [" + objectName + "].<br/> You can't undo this action.",
-      confirm: confirmFucion
-    });
   };
 
   //function for get key to check session

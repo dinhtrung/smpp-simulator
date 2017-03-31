@@ -1,13 +1,15 @@
-<div class="modal fade" id="dialogSmppConfigure" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel" aria-hidden="true">
+<div class="modal fade" id="dialogSmppConfigure" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"
+     aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+          aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="gridSystemModalLabel">SMPP Configure</h4>
       </div>
       <div class="modal-body">
         <div id="divShowMessageSmppConfigure"
-            class="alert {{typeAlertClassSmppConfigure}}"
+             class="alert {{typeAlertClassSmppConfigure}}"
              ng-show="isShowMessageSmppConfigure">
           <span style="font-weight: bold">{{messageFormSmppConfigure}}</span>
         </div>
@@ -77,7 +79,8 @@
                       <div class="form-group">
                         <label>SMPP window size</label>
                         <input class="form-control required integer" ng-model="smppCof.windowSize">
-                        <p class="help-block">The maximum number of requests permitted to be outstanding (unacknowledged) at a given time</p>
+                        <p class="help-block">The maximum number of requests permitted to be outstanding
+                          (unacknowledged) at a given time</p>
                       </div>
                       <div class="form-group">
                         <label>ConnectTimeout (milliseconds)</label>
@@ -126,16 +129,16 @@
                           <input type="radio" value="0" ng-model="smppCof.messageClass">No
                         </label>
                         <label class="radio">
-                          <input type="radio"  value="1" ng-model="smppCof.messageClass">Cl 0 Display
+                          <input type="radio" value="1" ng-model="smppCof.messageClass">Cl 0 Display
                         </label>
                         <label class="radio">
-                          <input type="radio"  value="2" ng-model="smppCof.messageClass">Cl 1 Equipment
+                          <input type="radio" value="2" ng-model="smppCof.messageClass">Cl 1 Equipment
                         </label>
                         <label class="radio">
                           <input type="radio" value="3" ng-model="smppCof.messageClass">Cl 2 SIM
                         </label>
                         <label class="radio">
-                          <input type="radio"  value="4" ng-model="smppCof.messageClass">Cl 3 External Unit 1
+                          <input type="radio" value="4" ng-model="smppCof.messageClass">Cl 3 External Unit 1
                         </label>
                       </div>
                     </div>
@@ -147,7 +150,7 @@
                           <input type="radio" value="0" ng-model="smppCof.smppEncoding">Utf8
                         </label>
                         <label class="radio">
-                          <input type="radio"  value="1" ng-model="smppCof.smppEncoding">Unicode
+                          <input type="radio" value="1" ng-model="smppCof.smppEncoding">Unicode
                         </label>
                         <label class="radio">
                           <input type="radio" value="2" ng-model="smppCof.smppEncoding">Gsm7
@@ -160,10 +163,15 @@
                       <div class="col-sm-7">
                         <select class="form-control" ng-model="smppCof.splittingType">
                           <option value="DoNotSplit">DoNotSplit</option>
-                          <option value="SplitWithParameters_DefaultSegmentLength">SplitWithParameters_DefaultSegmentLength</option>
+                          <option value="SplitWithParameters_DefaultSegmentLength">
+                            SplitWithParameters_DefaultSegmentLength
+                          </option>
                           <option value="SplitWithUdh_DefaultSegmentLength">SplitWithUdh_DefaultSegmentLength</option>
-                          <option value="SplitWithParameters_SpecifiedSegmentLength">SplitWithParameters_SpecifiedSegmentLength</option>
-                          <option value="SplitWithUdh_SpecifiedSegmentLength">SplitWithUdh_SpecifiedSegmentLength</option>
+                          <option value="SplitWithParameters_SpecifiedSegmentLength">
+                            SplitWithParameters_SpecifiedSegmentLength
+                          </option>
+                          <option value="SplitWithUdh_SpecifiedSegmentLength">SplitWithUdh_SpecifiedSegmentLength
+                          </option>
                         </select>
                       </div>
                     </div>
@@ -297,7 +305,8 @@
                         <label>
                           <input type="checkbox"
                                  ng-model="smppCof.rejectIncomingDeliveryMessage"
-                                 ng-true-value="true" ng-false-value="false">Rejecting of incoming SMPP delivery messages
+                                 ng-true-value="true" ng-false-value="false">Rejecting of incoming SMPP delivery
+                          messages
                         </label>
                       </div>
                     </div>
@@ -338,12 +347,14 @@
                       </div>
                       <div class="radio">
                         <label>
-                          <input type="radio" ng-model="smppCof.deliveryResponseGenerating" value="Success">Success receipt
+                          <input type="radio" ng-model="smppCof.deliveryResponseGenerating" value="Success">Success
+                          receipt
                         </label>
                       </div>
                       <div class="radio">
                         <label>
-                          <input type="radio" ng-model="smppCof.deliveryResponseGenerating" value="Error8">Receipt with error 8
+                          <input type="radio" ng-model="smppCof.deliveryResponseGenerating" value="Error8">Receipt with
+                          error 8
                         </label>
                       </div>
                     </div>
