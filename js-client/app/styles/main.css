@@ -1,0 +1,24 @@
+.form-horizontal .control-label {
+  text-align: left;
+}
+
+textarea {
+  resize: vertical !important;
+}
+
+.modalCircularGPr{
+  background-color: rgba(0, 0, 0, 0.5);
+  display:    none;
+  position:   fixed;
+  padding-top: 20%;
+  z-index:    2000;
+  top:        0;
+  left:       0;
+  height:     100%;
+  width:      100%;
+}
+
+.pError {
+  color: red;
+  font-style: italic;
+}

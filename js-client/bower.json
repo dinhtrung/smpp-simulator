@@ -1,0 +1,41 @@
+{
+  "name": "js-client",
+  "version": "0.0.0",
+  "dependencies": {
+    "angular": "^1.4.0",
+    "bootstrap": "^3.2.0",
+    "angular-animate": "^1.4.0",
+    "angular-cookies": "^1.4.0",
+    "angular-resource": "^1.4.0",
+    "angular-route": "^1.4.0",
+    "angular-sanitize": "^1.4.0",
+    "angular-touch": "^1.4.0",
+    "videogular": "^1.4.4",
+    "font-awesome": "fontawesome#^4.7.0",
+    "jquery-ui": "^1.12.1",
+    "startbootstrap-sb-admin-2": "https://github.com/BlackrockDigital/startbootstrap-sb-admin-2.git#master",
+    "angular-bootstrap": "^2.5.0",
+    "jquery-confirm2": "craftpip/jquery-confirm#^3.1.1",
+    "ng-file-upload": "^12.2.13"
+  },
+  "devDependencies": {
+    "angular-mocks": "^1.4.0"
+  },
+  "appPath": "app",
+  "moduleName": "jsClientApp",
+  "overrides": {
+    "bootstrap": {
+      "main": [
+        "less/bootstrap.less",
+        "dist/css/bootstrap.css",
+        "dist/js/bootstrap.js"
+      ]
+    },
+    "font-awesome": {
+      "main": [
+        "less/font-awesome.less",
+        "css/font-awesome.css"
+      ]
+    }
+  }
+}
