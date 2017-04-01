@@ -8,6 +8,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
 import com.myson.smppsimulator.model.ResReturnDTO;
+import com.myson.smppsimulator.util.Constants;
 
 /**
  * @author GiangDD
@@ -24,8 +25,8 @@ public class NotifSmppMessageController {
 //		return sms;
 //	}
 	
-	@MessageMapping("/hello")
-    @SendTo("/socketget/notifsmpp")
+	@MessageMapping("/"+Constants.STOMPENDPOINT)
+    @SendTo(Constants.SIMPLEBROKER+"/notifsmpp")
 	public ResReturnDTO sendNotifSmppMessage(ResReturnDTO sms) {
 		System.out.println("Send sms:\t"+sms.getData());
 		return sms;

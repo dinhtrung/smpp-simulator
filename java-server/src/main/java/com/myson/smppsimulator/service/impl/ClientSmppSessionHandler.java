@@ -30,6 +30,7 @@ import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.Logger;
 import org.mobicents.protocols.ss7.map.api.smstpdu.DataCodingScheme;
 import org.mobicents.protocols.ss7.map.datacoding.GSMCharset;
 import org.mobicents.protocols.ss7.map.datacoding.GSMCharsetDecoder;
@@ -41,6 +42,7 @@ import org.mobicents.smsc.library.MessageUtil;
 
 import com.myson.smppsimulator.model.SmppSimulatorParameters;
 import com.myson.smppsimulator.model.SmppSimulatorParameters.DeliveryResponseGenerating;
+import com.myson.smppsimulator.util.CodeStatusUtil;
 import com.cloudhopper.commons.util.windowing.WindowFuture;
 import com.cloudhopper.smpp.PduAsyncResponse;
 import com.cloudhopper.smpp.SmppConstants;
@@ -62,6 +64,7 @@ import com.cloudhopper.smpp.type.UnrecoverablePduException;
  */
 public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 
+	private static Logger logger = Logger.getLogger(ClientSmppSessionHandler.class);
 	private SmppTestingServiceImpl testingForm;
 	private SmppParametersServiceImpl smppParametersService;
 
@@ -85,6 +88,7 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 
 	// private int incMsgCnt = 0;
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public PduResponse firePduRequestReceived(PduRequest pduRequest) {
 
@@ -155,8 +159,8 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 						try {
 							bf = decoder.decode(bb);
 						} catch (CharacterCodingException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							logger.error("ClientSmppSessionHandler", e);
+							this.testingForm.addMessage(CodeStatusUtil.ADD_MESSAGE, "Have Exception. Can't doStop", e.getMessage());
 						}
 						s = bf.toString();
 					}
@@ -239,6 +243,7 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 		return resp;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void firePduRequestExpired(PduRequest pduRequest) {
 		testingForm.addMessage("PduRequestExpired: " + pduRequest.getName(), pduRequest.toString());
@@ -309,6 +314,7 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 			this.messageIdTlv = messageIdTlv;
 		}
 
+		@SuppressWarnings({ "rawtypes", "unused" })
 		@Override
 		public void run() {
 			SmppSimulatorParameters param = smppParametersService.getCofGeneralParameters();
@@ -377,6 +383,7 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
 				WindowFuture<Integer, PduRequest, PduResponse> future0 = testingForm.getSmppSession().sendRequestPdu(pdu,
 						10000, false);
 			} catch (Exception e) {
+				logger.error("ClientSmppSessionHandler", e);
 			}
 		}
 	}

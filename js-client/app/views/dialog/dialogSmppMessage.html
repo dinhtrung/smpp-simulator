@@ -1,0 +1,416 @@
+<div class="modal fade" id="dialogSmppConfigure" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+          aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="gridSystemModalLabel">SMPP Configure</h4>
+      </div>
+      <div class="modal-body">
+        <div id="divShowMessageSmppConfigure"
+             class="alert {{typeAlertClassSmppConfigure}}"
+             ng-show="isShowMessageSmppConfigure">
+          <span style="font-weight: bold">{{messageFormSmppConfigure}}</span>
+        </div>
+        <div class="row">
+          <div class="col-lg-12">
+            <!-- Nav tabs -->
+            <ul class="nav nav-pills">
+              <li ng-class="{'active': nameTabActive=='Configure'}"
+                  ng-click="changeTabName('Configure')"><a href="" data-toggle="tab">Configure</a>
+              </li>
+              <li ng-class="{'active': nameTabActive=='General'}"
+                  ng-click="changeTabName('General')"><a href="" data-toggle="tab">General</a>
+              </li>
+              <li ng-class="{'active': nameTabActive=='Response'}"
+                  ng-click="changeTabName('Response')"><a href="" data-toggle="tab">Response</a>
+              </li>
+              <li ng-class="{'active': nameTabActive=='Bulk'}"
+                  ng-click="changeTabName('Bulk')"><a href="" data-toggle="tab">Bulk</a>
+              </li>
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content">
+              <div class="tab-pane fade " ng-class="{' in active': nameTabActive=='Configure'}" id="Configure">
+                <div class="row">
+                  <div class="col-lg-6">
+                    <form role="form">
+                      <div class="form-group">
+                        <label>SystemId</label>
+                        <input class="form-control required" ng-model="smppCof.systemId">
+                      </div>
+                      <div class="form-group ">
+                        <label>Password</label>
+                        <input class="form-control required" ng-model="smppCof.password">
+                      </div>
+                      <div class="form-group">
+                        <label>SMSC host</label>
+                        <input class="form-control required" ng-model="smppCof.host">
+                      </div>
+                      <div class="form-group">
+                        <label>SMSC port (for client mode), local port (for server mode)</label>
+                        <input class="form-control required integer" ng-model="smppCof.port">
+                      </div>
+                      <div class="form-group">
+                        <label>SMPP bind type</label>
+                        <select class="form-control" ng-model="smppCof.bindType">
+                          <option value="TRANSCEIVER">TRANSCEIVER</option>
+                          <option value="TRANSMITTER">TRANSMITTER</option>
+                          <option value="RECEIVER">RECEIVER</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label>Smpp session type</label>
+                        <select class="form-control" ng-model="smppCof.smppSessionType">
+                          <option value="SERVER">SERVER</option>
+                          <option value="CLIENT">CLIENT</option>
+                        </select>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="col-lg-6">
+                    <form role="form">
+                      <div class="form-group">
+                        <label>Esme "address_range" field</label>
+                        <input class="form-control required" ng-model="smppCof.addressRange">
+                      </div>
+                      <div class="form-group">
+                        <label>SMPP window size</label>
+                        <input class="form-control required integer" ng-model="smppCof.windowSize">
+                        <p class="help-block">The maximum number of requests permitted to be outstanding
+                          (unacknowledged) at a given time</p>
+                      </div>
+                      <div class="form-group">
+                        <label>ConnectTimeout (milliseconds)</label>
+                        <input class="form-control required integer" ng-model="smppCof.connectTimeout">
+                      </div>
+                      <div class="form-group">
+                        <label>RequestExpiryTimeout (milliseconds)</label>
+                        <input class="form-control required integer" ng-model="smppCof.requestExpiryTimeout">
+                      </div>
+                      <div class="form-group">
+                        <label>WindowMonitorInterval (milliseconds)</label>
+                        <input class="form-control required integer" ng-model="smppCof.windowMonitorInterval">
+                      </div>
+                    </form>
+                  </div>
+                </div>
+                <!-- /.row -->
+              </div>
+              <!-- ./tab-pane-->
+              <div class="tab-pane fade " ng-class="{' in active': nameTabActive=='General'}" id="General">
+                <div class="row">
+                  <div class="col-lg-12">
+                    <div class="form-group">
+                      <label>Message text</label>
+                      <textarea class="form-control" rows="3" type="text" ng-model="smppCof.messageText"></textarea>
+                    </div>
+                    <!-- /.form-group-->
+                  </div>
+                  <!-- ./col-lg-12-->
+                  <div class="col-lg-12 form-horizontal">
+                    <div class="form-group">
+                      <label class="col-sm-5 control-label">Data coding scheme (DCS)</label>
+                      <div class="col-sm-7">
+                        <select class="form-control" ng-model="smppCof.encodingType">
+                          <option value="GSM7_DCS_0">GSM7_DCS_0</option>
+                          <option value="GSM8_DCS_4">GSM8_DCS_4</option>
+                          <option value="UCS2_DCS_8">UCS2_DCS_8</option>
+                        </select>
+                      </div>
+                    </div>
+                    <!-- /.form-group-->
+                    <div class=" form-group">
+                      <label class="col-sm-5 control-label">Message class</label>
+                      <div class="col-sm-7">
+                        <label class="radio">
+                          <input type="radio" value="0" ng-model="smppCof.messageClass">No
+                        </label>
+                        <label class="radio">
+                          <input type="radio" value="1" ng-model="smppCof.messageClass">Cl 0 Display
+                        </label>
+                        <label class="radio">
+                          <input type="radio" value="2" ng-model="smppCof.messageClass">Cl 1 Equipment
+                        </label>
+                        <label class="radio">
+                          <input type="radio" value="3" ng-model="smppCof.messageClass">Cl 2 SIM
+                        </label>
+                        <label class="radio">
+                          <input type="radio" value="4" ng-model="smppCof.messageClass">Cl 3 External Unit 1
+                        </label>
+                      </div>
+                    </div>
+                    <!-- /.form-group-->
+                    <div class=" form-group">
+                      <label class="col-sm-5 control-label">Encoding type at SMPP part for (GSM7/UCS2)</label>
+                      <div class="col-sm-7">
+                        <label class="radio">
+                          <input type="radio" value="0" ng-model="smppCof.smppEncoding">Utf8
+                        </label>
+                        <label class="radio">
+                          <input type="radio" value="1" ng-model="smppCof.smppEncoding">Unicode
+                        </label>
+                        <label class="radio">
+                          <input type="radio" value="2" ng-model="smppCof.smppEncoding">Gsm7
+                        </label>
+                      </div>
+                    </div>
+                    <!-- /.form-group-->
+                    <div class=" form-group">
+                      <label class="col-sm-5 control-label">Message splitting type</label>
+                      <div class="col-sm-7">
+                        <select class="form-control" ng-model="smppCof.splittingType">
+                          <option value="DoNotSplit">DoNotSplit</option>
+                          <option value="SplitWithParameters_DefaultSegmentLength">
+                            SplitWithParameters_DefaultSegmentLength
+                          </option>
+                          <option value="SplitWithUdh_DefaultSegmentLength">SplitWithUdh_DefaultSegmentLength</option>
+                          <option value="SplitWithParameters_SpecifiedSegmentLength">
+                            SplitWithParameters_SpecifiedSegmentLength
+                          </option>
+                          <option value="SplitWithUdh_SpecifiedSegmentLength">SplitWithUdh_SpecifiedSegmentLength
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+                    <!-- /.form-group-->
+                    <div class=" form-group">
+                      <label class="col-sm-5 control-label">Specified segment length</label>
+                      <div class="col-sm-7">
+                        <input class="form-control required integer"
+                               min-value="0"
+                               max-value="255"
+                               ng-model="smppCof.specifiedSegmentLength">
+                      </div>
+                    </div>
+                    <!-- /.form-group-->
+                    <div class=" form-group">
+                      <label class="col-sm-5 control-label">Source address: Type of number</label>
+                      <div class="col-sm-7">
+                        <select class="form-control"
+                                ng-options="item as item for item in listTON"
+                                ng-model="smppCof.sourceTON">
+                        </select>
+                      </div>
+                    </div>
+                    <!-- /.form-group-->
+                    <div class=" form-group">
+                      <label class="col-sm-5 control-label">Source address: Numbering plan indicator</label>
+                      <div class="col-sm-7">
+                        <select class="form-control"
+                                ng-model="smppCof.sourceNPI"
+                                ng-options="item as item for item in listSNpi">
+                        </select>
+                      </div>
+                    </div>
+                    <!-- /.form-group-->
+                    <div class=" form-group">
+                      <label class="col-sm-5 control-label">Destination address: Type of number</label>
+                      <div class="col-sm-7">
+                        <select class="form-control"
+                                ng-model="smppCof.destTON"
+                                ng-options="item as item for item in listTON">
+                        </select>
+                      </div>
+                    </div>
+                    <!-- /.form-group-->
+                    <div class=" form-group">
+                      <label class="col-sm-5 control-label">Destination address: Numbering plan indicator</label>
+                      <div class="col-sm-7">
+                        <select class="form-control"
+                                ng-model="smppCof.destNPI"
+                                ng-options="item as item for item in listSNpi">
+                        </select>
+                      </div>
+                    </div>
+                    <!-- /.form-group-->
+                    <div class=" form-group">
+                      <label class="col-sm-5 control-label">Source address</label>
+                      <div class="col-sm-7">
+                        <input class="form-control" ng-model="smppCof.sourceAddress">
+                      </div>
+                    </div>
+                    <!-- /.form-group-->
+                    <div class=" form-group">
+                      <label class="col-sm-5 control-label">Destination address</label>
+                      <div class="col-sm-7">
+                        <input class="form-control" ng-model="smppCof.destAddress">
+                      </div>
+                    </div>
+                    <!-- /.form-group-->
+                    <div class=" form-group">
+                      <label class="col-sm-5 control-label">Validity period / schedule delivery time</label>
+                      <div class="col-sm-7">
+                        <select class="form-control"
+                                ng-model="smppCof.validityType"
+                                ng-options="item as item for item in listValidityType">
+                        </select>
+                      </div>
+                    </div>
+                    <!-- /.form-group-->
+                    <div class=" form-group">
+                      <label class="col-sm-5 control-label">Sending message type</label>
+                      <div class="col-sm-7">
+                        <select class="form-control"
+                                ng-model="smppCof.sendingMessageType"
+                                ng-options="item as item for item in listSendingMessageType">
+                        </select>
+                      </div>
+                    </div>
+                    <!-- /.form-group-->
+                    <div class=" form-group">
+                      <label class="col-sm-5 control-label">Message count for SubmitMulti message </label>
+                      <div class="col-sm-7">
+                        <input class="form-control required integer"
+                               min-value="0"
+                               max-value="255"
+                               ng-model="smppCof.submitMultiMessageCnt">
+                      </div>
+                      <p class="col-sm-12 help-block">(addresses are for 0, 1, 2,... more then a "Dest.address")</p>
+                    </div>
+                    <!-- /.form-group-->
+                    <div class=" form-group">
+                      <label class="col-sm-5 control-label">MCDeliveryReceipt request (in registered_delivery)</label>
+                      <div class="col-sm-7">
+                        <select class="form-control"
+                                ng-model="smppCof.mcDeliveryReceipt"
+                                ng-options="item as item for item in listMCDeliveryReceipt">
+                        </select>
+                      </div>
+                    </div>
+                    <!-- /.form-group-->
+                    <div class=" form-group">
+                      <label class="col-sm-5 control-label">Messaging mode</label>
+                      <div class="col-sm-7">
+                        <select class="form-control" ng-model="smppCof.messagingMode"
+                                ng-options="item as item for item in listMessagingMode">
+                        </select>
+                      </div>
+                    </div>
+                    <!-- /.form-group-->
+
+                  </div>
+                  <!-- ./col-lg-12-->
+                </div>
+                <!-- /.row -->
+              </div>
+              <!-- ./tab-pane-->
+              <div class="tab-pane fade" ng-class="{' in active': nameTabActive=='Response'}" id="Response">
+                <div class="row">
+                  <div class="col-lg-12">
+                    <div class="form-group">
+                      <div class="checkbox">
+                        <label>
+                          <input type="checkbox"
+                                 ng-model="smppCof.rejectIncomingDeliveryMessage"
+                                 ng-true-value="true" ng-false-value="false">Rejecting of incoming SMPP delivery
+                          messages
+                        </label>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="checkbox">
+                        <label>
+                          <input type="checkbox" ng-model="smppCof.deliveryResponseAfter2Min"
+                                 ng-true-value="true" ng-false-value="false">Delivery receipt after 2 min
+                        </label>
+                      </div>
+                    </div>
+                    <!-- /.form-group-->
+                    <div class="form-group">
+                      <div class="checkbox">
+                        <label>
+                          <input type="checkbox" ng-model="smppCof.idResponseTlv"
+                                 ng-true-value="true" ng-false-value="false">Tlv fields usage in delivery receipt
+                        </label>
+                      </div>
+                    </div>
+                    <!-- /.form-group-->
+                    <div class="form-group">
+                      <div class="checkbox">
+                        <label>
+                          <input type="checkbox" ng-model="smppCof.wrongMessageIdInDlr"
+                                 ng-true-value="true" ng-false-value="false">Wrong messageId in delivery receipt
+                        </label>
+                      </div>
+                    </div>
+                    <!-- /.form-group-->
+                    <!-- /.form-group-->
+                    <div class="form-group">
+                      <label>Generating of delivery receipts</label>
+                      <div class="radio">
+                        <label>
+                          <input type="radio" ng-model="smppCof.deliveryResponseGenerating" value="No">Disabled
+                        </label>
+                      </div>
+                      <div class="radio">
+                        <label>
+                          <input type="radio" ng-model="smppCof.deliveryResponseGenerating" value="Success">Success
+                          receipt
+                        </label>
+                      </div>
+                      <div class="radio">
+                        <label>
+                          <input type="radio" ng-model="smppCof.deliveryResponseGenerating" value="Error8">Receipt with
+                          error 8
+                        </label>
+                      </div>
+                    </div>
+                    <!-- /.form-group-->
+
+                  </div>
+                  <!-- ./col-lg-12-->
+                </div>
+                <!-- /.row -->
+              </div>
+              <div class="tab-pane fade" ng-class="{' in active': nameTabActive=='Bulk'}" id="Bulk">
+                <div class="row">
+                  <div class="col-lg-12 form-horizontal">
+                    <div class=" form-group">
+                      <label class="col-sm-12 control-label">Bulk message sending options</label>
+                    </div>
+                    <!-- /.form-group-->
+                    <div class=" form-group">
+                      <label class="col-sm-5 control-label">Destination address range start</label>
+                      <div class="col-sm-7">
+                        <input class="form-control required integer"
+                               ng-model="smppCof.bulkDestAddressRangeStart">
+                      </div>
+                    </div>
+                    <!-- /.form-group-->
+                    <div class=" form-group">
+                      <label class="col-sm-5 control-label">Destination address range end</label>
+                      <div class="col-sm-7">
+                        <input class="form-control required integer"
+                               ng-model="smppCof.bulkDestAddressRangeEnd">
+                      </div>
+                    </div>
+                    <!-- /.form-group-->
+                    <div class=" form-group">
+                      <label class="col-sm-5 control-label">Bulk messages per second</label>
+                      <div class="col-sm-7">
+                        <input class="form-control required integer"
+                               ng-model="smppCof.bulkMessagePerSecond">
+                      </div>
+                    </div>
+                    <!-- /.form-group-->
+                  </div>
+                  <!-- ./col-lg-12-->
+                </div>
+                <!-- /.row -->
+
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /.row -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" ng-click="saveSmppConfigure()">Save changes</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

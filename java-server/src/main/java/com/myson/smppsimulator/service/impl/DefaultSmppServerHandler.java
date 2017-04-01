@@ -1,5 +1,7 @@
 package com.myson.smppsimulator.service.impl;
 
+import org.apache.log4j.Logger;
+
 import com.cloudhopper.smpp.SmppConstants;
 import com.cloudhopper.smpp.SmppServerHandler;
 import com.cloudhopper.smpp.SmppServerSession;
@@ -16,15 +18,18 @@ import com.cloudhopper.smpp.type.SmppProcessingException;
  */
 public class DefaultSmppServerHandler implements SmppServerHandler {
 
-	private SmppTestingServiceImpl testingForm;
+	@SuppressWarnings("unused")
+	private static Logger logger = Logger.getLogger(ClientSmppSessionHandler.class);
+	private SmppTestingServiceImpl smppTestingServiceImpl;
 
 	public DefaultSmppServerHandler() {
-        this.testingForm = SmppTestingServiceImpl.getInstance();
+        this.smppTestingServiceImpl = SmppTestingServiceImpl.getInstance();
     }
 
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
     public void sessionBindRequested(Long sessionId, SmppSessionConfiguration sessionConfiguration, final BaseBind bindRequest) throws SmppProcessingException {
-        if (this.testingForm.getSmppSession() != null) {
+        if (this.smppTestingServiceImpl.getSmppSession() != null) {
             throw new SmppProcessingException(SmppConstants.STATUS_INVBNDSTS);
         }
 
@@ -37,19 +42,19 @@ public class DefaultSmppServerHandler implements SmppServerHandler {
 
     @Override
     public void sessionCreated(Long sessionId, SmppServerSession session, BaseBindResp preparedBindResponse) throws SmppProcessingException {
-        if (this.testingForm.getSmppSession() != null) {
+        if (this.smppTestingServiceImpl.getSmppSession() != null) {
             throw new SmppProcessingException(SmppConstants.STATUS_INVBNDSTS);
         }
 
-        this.testingForm.addMessage("Session created", session.getConfiguration().getSystemId());
-        this.testingForm.setSmppSession(session);
+        this.smppTestingServiceImpl.addMessage("Session created", session.getConfiguration().getSystemId());
+        this.smppTestingServiceImpl.setSmppSession(session);
         session.serverReady(new ClientSmppSessionHandler());
     }
 
     @Override
     public void sessionDestroyed(Long sessionId, SmppServerSession session) {
-        this.testingForm.addMessage("Session destroyed", session.getConfiguration().getSystemId());
-        this.testingForm.setSmppSession(null);
+        this.smppTestingServiceImpl.addMessage("Session destroyed", session.getConfiguration().getSystemId());
+        this.smppTestingServiceImpl.setSmppSession(null);
 
         session.destroy();
     }

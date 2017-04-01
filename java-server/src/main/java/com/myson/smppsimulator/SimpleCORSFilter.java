@@ -31,6 +31,7 @@ public class SimpleCORSFilter implements Filter {
 		 path = StringUtils.getRequestMapping(path);
 		 switch (path) {
 			 case Constants.MAPPING_REQUEST_RS:
+			 case Constants.STOMPENDPOINT:
 				 setCorsForRespon(res);
 				 break;
 			 default:
@@ -44,8 +45,9 @@ public class SimpleCORSFilter implements Filter {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE");
 		response.setHeader("Access-Control-Max-Age", "3600");
+		response.setHeader("Origin", "*");
 		response.setHeader("Access-Control-Allow-Headers",
-		        "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+		        " X-Requested-With, Content-Type, Accept, Authorization");
 //		response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, "
 //				+ Constant.AUTHORIZATION_ID + ", " + Constant.AUTHORIZATION_KEY);
 	}

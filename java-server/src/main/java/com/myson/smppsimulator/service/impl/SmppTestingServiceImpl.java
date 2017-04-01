@@ -5,9 +5,10 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
-import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -20,6 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.log4j.Logger;
 import org.mobicents.protocols.ss7.map.api.smstpdu.DataCodingScheme;
 import org.mobicents.protocols.ss7.map.datacoding.GSMCharset;
 import org.mobicents.protocols.ss7.map.datacoding.GSMCharsetEncoder;
@@ -28,11 +30,22 @@ import org.mobicents.protocols.ss7.map.datacoding.Gsm7EncodingStyle;
 import org.mobicents.protocols.ss7.map.smstpdu.DataCodingSchemeImpl;
 import org.mobicents.smsc.library.MessageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.messaging.simp.stomp.StompHeaders;
+import org.springframework.messaging.simp.stomp.StompSession;
+import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.socket.WebSocketHttpHeaders;
+import org.springframework.web.socket.client.standard.StandardWebSocketClient;
+import org.springframework.web.socket.messaging.WebSocketStompClient;
+import org.springframework.web.socket.sockjs.client.SockJsClient;
+import org.springframework.web.socket.sockjs.client.Transport;
+import org.springframework.web.socket.sockjs.client.WebSocketTransport;
+import org.springframework.web.socket.sockjs.frame.Jackson2SockJsMessageCodec;
 
 import com.cloudhopper.commons.util.windowing.WindowFuture;
 import com.cloudhopper.smpp.SmppConstants;
@@ -51,6 +64,7 @@ import com.cloudhopper.smpp.pdu.SubmitSm;
 import com.cloudhopper.smpp.tlv.Tlv;
 import com.cloudhopper.smpp.type.Address;
 import com.cloudhopper.smpp.type.SmppChannelException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.myson.smppsimulator.model.ResReturnDTO;
 import com.myson.smppsimulator.model.SmppMessage;
 import com.myson.smppsimulator.model.SmppSimulatorParameters;
@@ -70,6 +84,8 @@ import com.myson.smppsimulator.util.StringUtils;
 @EnableScheduling
 @Service("SmppTestingService")
 public class SmppTestingServiceImpl implements SmppTestingService {
+
+	private static Logger logger = Logger.getLogger(SmppTestingServiceImpl.class);
 
 	private static SmppTestingServiceImpl smppTestingService;
 
@@ -92,8 +108,9 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 	private SmppSession session0;
 	private DefaultSmppServer defaultSmppServer;
 
-	@Autowired
-	private SimpMessagingTemplate template;
+	private StompSession stompSession;
+	// @Autowired
+	// private SimpMessagingTemplate template;
 
 	@Autowired
 	private SmppParametersService smppParametersService;
@@ -103,7 +120,17 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 		smppTestingService = this;
 		Random rn = new Random();
 		msgIdGenerator = new AtomicLong(rn.nextInt(100000000));
+
+		// try {
+		// ListenableFuture<StompSession> f = connect();
+		// stompSession = f.get();
+		// } catch (Exception e) {
+		// logger.error("ClientSmppSessionHandler", e);
+		// }
 	}
+
+	@Value("${server.port}")
+	private String serverPort;
 
 	public static SmppTestingServiceImpl getInstance() {
 		return smppTestingService;
@@ -112,34 +139,66 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 	private SmppTestingServiceImpl() {
 	}
 
+	private final static WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
+
+	public ListenableFuture<StompSession> connect() {
+
+		Transport webSocketTransport = new WebSocketTransport(new StandardWebSocketClient());
+		List<Transport> transports = Collections.singletonList(webSocketTransport);
+
+		SockJsClient sockJsClient = new SockJsClient(transports);
+		sockJsClient.setMessageCodec(new Jackson2SockJsMessageCodec());
+
+		WebSocketStompClient stompClient = new WebSocketStompClient(sockJsClient);
+
+		String url = "ws://{host}:{port}/" + Constants.STOMPENDPOINT;
+		return stompClient.connect(url, headers, new MyHandler(), "localhost", 8080);
+	}
+
 	private int count = 1;
 
-	@Scheduled(fixedRate = 2000)
+	@Scheduled(initialDelay = 10000, fixedRate = 2000)
 	public void scheduledAddMessage() {
 		String s = "debug " + count;
 		addMessage(CodeStatusUtil.ADD_MESSAGE, s, s);
 		count++;
 	}
-	
-	public void addMessage(String msg, String info){
+
+	private void setStompSession() {
+		try {
+			if (stompSession == null) {
+				ListenableFuture<StompSession> f = connect();
+				stompSession = f.get();
+			}
+		} catch (Exception e) {
+			logger.error("addMessage", e);
+		}
+	}
+
+	public void addMessage(String msg, String info) {
 		addMessage(CodeStatusUtil.ADD_MESSAGE, msg, info);
 	}
 
 	public void addMessage(Integer codeStatus, String msg, String info) {
-		SmppMessage sms = new SmppMessage();
 		try {
+			SmppMessage sms = new SmppMessage();
 			String sDate = StringUtils.convertDateToString(new Date(), Constants.FORMAT_DATE_YYYY_MM_DD_HH_MM_SS);
 			sms.setInfo(info);
 			sms.setMsg(msg);
 			sms.setTimeStamp(sDate);
-			System.out.println("Scheduled sms:\t" + sms);
+			System.out.println("Add sms:\t" + sms);
 			ResReturnDTO returnDTO = new ResReturnDTO();
 			returnDTO.setCodeStatus(codeStatus);
 			returnDTO.setData(sms);
-			this.template.convertAndSend("/app/hello", returnDTO);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// this.template.convertAndSend(Constants.APPLICATIONDESTINATIONPREFIXES+"/"+Constants.STOMPENDPOINT,
+			// returnDTO);
+			ObjectMapper mapper = new ObjectMapper();
+			String jsonInString = mapper.writeValueAsString(returnDTO);
+			setStompSession();
+			stompSession.send(Constants.APPLICATIONDESTINATIONPREFIXES + "/" + Constants.STOMPENDPOINT,
+					jsonInString.getBytes());
+		} catch (Exception e) {
+			logger.error("addMessage", e);
 		}
 
 	}
@@ -168,8 +227,8 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 			((TestSmppSession) this.session0).setMalformedPacket();
 			this.session0.submit(submitSm, 1000);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.addMessage(CodeStatusUtil.ADD_MESSAGE, "Have Exception. Can't send bad packet", e.getMessage());
+			logger.error("submitSm", e);
 		}
 	}
 
@@ -312,7 +371,8 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 
 			this.addMessage(CodeStatusUtil.SESSION_STOP, "Session has been stopped", "");
 		} catch (Exception e) {
-			// TODO: handle exception
+			this.addMessage(CodeStatusUtil.ADD_MESSAGE, "Have Exception. Can't doStop", e.getMessage());
+			logger.error("doStop", e);
 		}
 
 	}
@@ -475,6 +535,7 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 					messageClassVal);
 		} catch (Exception e) {
 			this.addMessage(CodeStatusUtil.MESSAGE_SUBMIT_FALSE, "Failure to submit message", e.toString());
+			logger.error("SmppTestingServiceImpl", e);
 			return;
 		}
 	}
@@ -516,6 +577,7 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 		return res;
 	}
 
+	@SuppressWarnings({ "rawtypes", "incomplete-switch" })
 	private void doSubmitMessage(int dcs, ArrayList<byte[]> msgLst, int msgRef, boolean addSegmTlv, int esmClass,
 			SmppSimulatorParameters.ValidityType validityType, int segmentCnt, String destAddr, int messageClassVal)
 			throws Exception {
@@ -635,11 +697,12 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 				pdu.addOptionalParameter(tlv);
 			}
 
+			@SuppressWarnings("unused")
 			WindowFuture<Integer, PduRequest, PduResponse> future0 = session0.sendRequestPdu(pdu, 10000, false);
 
 			this.messagesSent.incrementAndGet();
 			if (this.timer == null) {
-				this.addMessage(CodeStatusUtil.ADD_MESSAGE,"Request=" + pdu.getName(), pdu.toString());
+				this.addMessage(CodeStatusUtil.ADD_MESSAGE, "Request=" + pdu.getName(), pdu.toString());
 			}
 		}
 
@@ -661,8 +724,8 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 				try {
 					bb = encoder.encode(CharBuffer.wrap(msg));
 				} catch (CharacterCodingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error("SmppTestingServiceImpl", e);
+					this.addMessage(CodeStatusUtil.ADD_MESSAGE, "Have Exception. Can't doStop", e.getMessage());
 				}
 				byte[] data = new byte[bb.limit()];
 				bb.get(data);
@@ -782,8 +845,8 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 			inputStream.close();
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("SmppTestingServiceImpl", e);
+			this.addMessage(CodeStatusUtil.ADD_MESSAGE, "Have Exception. Can't doStop", e.getMessage());
 		} finally {
 			this.isStartBulk = true;
 		}
@@ -821,4 +884,9 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 		return msgIdGenerator;
 	}
 
+	private class MyHandler extends StompSessionHandlerAdapter {
+		public void afterConnected(StompSession stompSession, StompHeaders stompHeaders) {
+			logger.info("Now connected");
+		}
+	}
 }
