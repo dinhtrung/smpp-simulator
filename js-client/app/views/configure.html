@@ -17,37 +17,47 @@
         <!--</div>-->
         <!-- /.panel-heading -->
         <div class="panel-body">
-          <div class="table-responsive">
-            <table class="table table-striped table-bordered table-hover"
-                   style='table-layout:fixed;width:100%'>
-              <thead>
-              <tr>
-                <th style="width: 200px">TimeStamp</th>
-                <th style="width: 40%">Message</th>
-                <th>UserData</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-              </tr>
-              <tr>
-                <td>Jacob</td>
-                <td>Thornton</td>
-                <td>@fat</td>
-              </tr>
-              <tr>
-                <td>Larry</td>
-                <td>the Bird</td>
-                <td>@twitter</td>
-              </tr>
-              </tbody>
-            </table>
-          </div>
-          <!-- /.table-responsive -->
           <div class="row">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <div class="col-lg-12">
+                  <div class="heading box_heading hidden-xs hidden-sm col-md-2 col-lg-2">
+                    TimeStamp
+                  </div>
+                  <div class="heading box_heading padding_l15_r0 border-left-white col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                    Message
+                  </div>
+                  <div
+                    class="heading box_heading padding_l15_r0 border-left-white  hidden-xs hidden-sm col-md-6 col-lg-6">
+                    UserData
+                  </div>
+                </div>
+                <!-- /.col-lg-12 -->
+                <div class="col-lg-12 grow" style="overflow-x: auto; max-height: 300px; min-height: 100px">
+                  <div
+                    ng-repeat="item in listMessage"
+                    class="col-lg-12  row_box cursor_pointer break-word"
+                    ng-click="showDialogSmmMessage(item)"
+                  >
+                    <div class="padding_l_r_0 hidden-xs hidden-sm col-md-2 col-lg-2">
+                      {{item.timeStamp}}
+                    </div>
+                    <div class="padding_l15_r0 col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                      {{item.msg}}&nbsp;
+                    </div>
+                    <div class="padding_l15_r0 hidden-xs hidden-sm col-md-6 col-lg-6">
+                      {{item.info}}&nbsp;
+                    </div>
+                  </div>
+                </div>
+                <!-- /.col-lg-12 -->
+              </div>
+              <!-- /.panel-body -->
+            </div>
+          </div>
+          <!-- /.row -->
+
+          <div class="row" style="padding-top: 15px">
             <div class="col-lg-12">
               <button type="button" class="btn btn-primary"
                       ng-click="clickBtStartASession()"
@@ -104,7 +114,8 @@
             <div class="col-lg-4">
               <div class="form-group input-group">
                 <span class="input-group-addon">TCP Port for pcap parsing</span>
-                <input type="text" ng-model="portForPcapParsing" ng-disabled="!isRandomBulkMessages" class="form-control integer">
+                <input type="text" ng-model="portForPcapParsing" ng-disabled="!isRandomBulkMessages"
+                       class="form-control integer">
               </div>
             </div>
             <div class="col-lg-4">
@@ -131,5 +142,6 @@
 </div>
 <!-- /.container-fluid -->
 <div ng-include="'views/dialog/dialogSmppConfigure.html'"></div>
+<div ng-include="'views/dialog/dialogSmppMessage.html'"></div>
 <!--</div>-->
 <!-- /#page-wrapper -->

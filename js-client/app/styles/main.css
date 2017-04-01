@@ -22,3 +22,65 @@ textarea {
   color: red;
   font-style: italic;
 }
+
+.box_heading {
+  /*border-left: 1px solid #ccc;*/
+  box-shadow: none !important;
+  float: left;
+  font-size: 12px;
+  padding-left: 15px;
+  text-align: left;
+  /*width: 25%;*/
+  /*height: 100%;*/
+}
+
+.heading {
+  background-color: #ddd;
+  line-height: 20px;
+  padding-bottom: 5px;
+  padding-top: 5px;
+}
+
+.border-left-white {
+  border-left: 1px solid white;
+}
+
+.padding_l15_r0 {
+  padding-left: 15px !important;
+  padding-right: 0px !important;
+}
+.padding_l_r_0 {
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+}
+
+
+.break-word {
+  word-wrap: break-word;
+  word-break: break-all;
+  /*overflow: hidden;*/
+  /*text-overflow: ellipsis;*/
+  /*white-space: nowrap;*/
+}
+
+.grow .row_box {
+  background: #eee;
+  color: #252525;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #fff;
+  border-top: 1px solid #fff;
+}
+
+.grow .row_box:nth-child(odd) {
+  background: #fff;
+}
+
+.cursor_pointer {
+  cursor: pointer;
+}
+
+.row_selected {
+  background: none repeat scroll 0 0 #8dc63f !important;
+  color: #363636;
+}

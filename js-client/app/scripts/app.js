@@ -19,7 +19,8 @@ angular
     'ngFileUpload'
   ])
   .constant('CONFIG', {
-    'SERVICE_BASE': 'http://localhost:8080/rs/',
+    // 'SERVICE_BASE': 'http://localhost:8080/rs/',
+    'SERVICE_BASE': '/rs/',
     'FORMAT_DATE_YYYY_MM_DD_HH_MM_SS': 'yyyy-MM-dd HH:mm:ss'
   })
   .config(function ($routeProvider) {

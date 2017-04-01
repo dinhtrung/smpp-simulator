@@ -15,6 +15,13 @@ angular.module('jsClientApp')
     $scope.isRandomBulkMessages = true;
     $scope.portForPcapParsing = null;
 
+    // for (var i = 0; i < 200; i++){
+    //   var item = {};
+    //   item.timeStamp = '207-04-02 03:42:'+i;
+    //   item.msg = 'msg '+i;
+    //   item.info = 'info'+ i;
+    //   $scope.listMessage.push(item);
+    // }
     $scope.addMessageToList = function (message) {
       if(cF.isNotNull(message)){
         $scope.listMessage.push(message);
@@ -22,42 +29,36 @@ angular.module('jsClientApp')
 
     };
 
-    $scope.commonGetResult = function (data) {
-      cF.closeWaitingDialog();
-      var result = data.data;
-      if (result.codeStatus < 1) {
+    $scope.commonGetResult = function (object) {
+      // cF.closeWaitingDialog();
+      var result = object.data;
+      if (object.codeStatus < 1) {
         cF.showDialogOneBt('ERROR', 'SYSTEM ERROR!', 'btn-danger', 'fa fa-exclamation-triangle', cF.goToLoginScreen);
       } else {
+        $scope.addMessageToList(result);
         switch (result.codeStatus) {
           //ADD_MESSAGE = 1;
           case 1:
-            $scope.addMessageToList(result.data);
             break;
           //REFRESH_STATE = 2;
           case 2:
-            $scope.addMessageToList(result.data);
             break;
           // SESSION_START_FALSE = 3;
           case 3:
             $scope.isStartSession = false;
-            $scope.addMessageToList(result.data);
             break;
           //SESSION_START_SUCCESS = 4;
           case 4:
             $scope.isStartSession = true;
-            $scope.addMessageToList(result.data);
             break;
           //SESSION_STOP = 5;
           case 5:
             $scope.isStartSession = false;
-            $scope.addMessageToList(result.data);
             break;
           // MESSAGE_SUBMIT_FALSE = 6;
           case 6:
-            $scope.addMessageToList(result.data);
             break;
           default:
-            $scope.addMessageToList(result.data);
             break;
         }
       }
@@ -128,6 +129,19 @@ angular.module('jsClientApp')
 
     };
 
+    //======================================DIALOG SMMPP MESSAGE=====================================//
+    $scope.nameDialogSmppMessage = '#dialogSmppMessage';
+    $scope.smppMessage = {};
+    $scope.showDialogSmmMessage = function (item) {
+      $scope.smppMessage = item;
+      $($scope.nameDialogSmppMessage).modal('show');
+
+    };
+
+    $($scope.nameDialogSmppMessage).on('hidden.bs.modal', function (e) {
+      $scope.smppMessage = {};
+    });
+
     //======================================DIALOG SMMPP CONFIGURE=====================================//
     $scope.listSNpi = ['Unknown', 'ISDN', 'Data', 'Telex', 'Land_Mobile', 'National', 'Private', 'ERMES', 'Internet_IP', 'WAP_Client_Id'];
     $scope.listTON = ['Unknown', 'International', 'National', 'Network_Specific', 'Subscriber_Number', 'Alfanumeric', 'Abbreviated'];
@@ -195,22 +209,24 @@ angular.module('jsClientApp')
 
     $scope.hiddenMessageStatus();
 
-    // $scope.stompClient = null;
-    // function connect() {
-    //   //var socket = new SockJS('http://localhost:8080/gs-guide-websocket');
-    //   $scope.socket = new SockJS('http://localhost:8080/gs-guide-websocket');
-    //
-    //   // $scope.socket.onmessage = function(e) {
-    //   //   $log.info(e.data);
-    //   // };
-    //
-    //   $scope.stompClient = Stomp.over($scope.socket);
-    //   $scope.stompClient.connect({}, function (frame) {
-    //     $log.info('Connected: ' + frame);
-    //     $scope.stompClient.subscribe('http://localhost:8080/socketget/notifsmpp', function (greeting) {
-    //       $log.info(greeting);
-    //     });
-    //   });
-    // }
-    // connect();
+    $scope.stompClient = null;
+    function connect() {
+      //var socket = new SockJS('http://localhost:8080/gs-guide-websocket');
+      $scope.socket = new SockJS('/myson-websocket');
+
+      // $scope.socket.onmessage = function(e) {
+      //   $log.info(e.data);
+      // };
+
+      $scope.stompClient = Stomp.over($scope.socket);
+      $scope.stompClient.connect({}, function (frame) {
+        $log.info('Connected: ' + frame);
+        $scope.stompClient.subscribe('/socketget/notifsmpp', function (greeting) {
+          //$log.info(greeting);
+          var result = JSON.parse(greeting.body);
+          $scope.commonGetResult(result);
+        });
+      });
+    }
+    connect();
   });
