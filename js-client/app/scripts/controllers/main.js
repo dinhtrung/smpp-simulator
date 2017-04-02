@@ -8,12 +8,13 @@
  * Controller of the jsClientApp
  */
 angular.module('jsClientApp')
-  .controller('MainCtrl', function ($scope, $rootScope, $timeout, $log, smppParametersService, smppTestingService, cF) {
+  .controller('MainCtrl', function ($scope, $rootScope, $timeout, $log, smppParametersService, smppTestingService, cF, Upload, CONFIG) {
     $scope.smppCof = {};
     $scope.isStartSession = false;
     $scope.listMessage = [];
     $scope.isRandomBulkMessages = true;
-    $scope.portForPcapParsing = null;
+    $scope.portForPcapParsing = 2775;
+    $scope.file = null;
 
     // for (var i = 0; i < 200; i++){
     //   var item = {};
@@ -25,6 +26,7 @@ angular.module('jsClientApp')
     $scope.addMessageToList = function (message) {
       if(cF.isNotNull(message)){
         $scope.listMessage.push(message);
+        $scope.$apply();
       }
 
     };
@@ -129,6 +131,83 @@ angular.module('jsClientApp')
 
     };
 
+    $scope.clickBtStopBulkSending = function () {
+      cF.showWaitingDialog();
+      smppTestingService.stopBulkSending().then(
+        function (data) {
+          cF.closeWaitingDialog();
+          //TODO ....
+        }, function (error) {
+          $log.error(error);
+          cF.showDialogSystemError();
+        });
+
+    };
+
+    $scope.bulkSendingRandom = function () {
+      cF.showWaitingDialog();
+      smppTestingService.bulkSendingRandom().then(
+        function (data) {
+          cF.closeWaitingDialog();
+          //TODO ....
+        }, function (error) {
+          $log.error(error);
+          cF.showDialogSystemError();
+        });
+
+    };
+
+
+
+    $scope.bulkSendingFromPcapFile = function () {
+      var message = '';
+      if(cF.isNull($scope.portForPcapParsing)){
+        message = '<p class=\"pError\">Please input number for TCP Port for pcap parsing</p>';
+      } else if (!cF.isInteger($scope.portForPcapParsing)) {
+        message = '<p class=\"pError\">Please input number for TCP Port for pcap parsing</p>';
+      }
+
+      if(cF.isNull($scope.file)){
+        if(cF.isNotEmpty(message)){
+          message = message +'<br /><p class=\"pError\"> And please input number for TCP Port for pcap parsing</p>';
+        } else {
+          message = '<p class=\"pError\">Please chose pcap file.</p>';
+        }
+      }
+      if(cF.isNotEmpty(message)){
+        $.alert({
+          title: 'Alert!',
+          content: message,
+        });
+        return;
+      }
+      cF.showWaitingDialog();
+      Upload.upload({
+        url: CONFIG.SERVICE_BASE + 'smpp-test/bulk-sending-from-pcap-file',
+        data: {file: $scope.file, 'port': $scope.portForPcapParsing}
+      }).then(function (resp) {
+        console.log('Success ' + resp.config.data.file.name + 'uploaded. Response: ' + resp.data);
+        cF.closeWaitingDialog();
+      }, function (resp) {
+        cF.closeWaitingDialog();
+        cF.showDialogSystemError();
+        console.log('Error status: ' + resp.status);
+      }, function (evt) {
+        var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+        console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
+      });
+    };
+
+    $scope.clickBtStartBulkSending = function () {
+      if($scope.isRandomBulkMessages){
+        $scope.bulkSendingRandom();
+      } else {
+        $scope.bulkSendingFromPcapFile();
+      }
+
+    };
+
+
     //======================================DIALOG SMMPP MESSAGE=====================================//
     $scope.nameDialogSmppMessage = '#dialogSmppMessage';
     $scope.smppMessage = {};
@@ -158,6 +237,7 @@ angular.module('jsClientApp')
     $scope.nameDialogSmppConfigure = '#dialogSmppConfigure';
     $scope.showDialogSmppConfigure = function () {
       cF.showWaitingDialog();
+      cF.removeLabelErrorOfParent($scope.nameDialogSmppConfigure);
       smppParametersService.getConfigSmpp().then(
         function (data) {
           cF.closeWaitingDialog();
@@ -228,5 +308,5 @@ angular.module('jsClientApp')
         });
       });
     }
-    connect();
+    // connect();
   });

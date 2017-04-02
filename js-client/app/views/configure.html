@@ -59,6 +59,8 @@
 
           <div class="row" style="padding-top: 15px">
             <div class="col-lg-12">
+              <button type="button" class="btn btn-info" ng-click="showDialogSmppConfigure()">Configure</button>
+
               <button type="button" class="btn btn-primary"
                       ng-click="clickBtStartASession()"
                       ng-disabled="isStartSession">
@@ -69,9 +71,6 @@
                       ng-disabled="!isStartSession">
                 Stop a session
               </button>
-              <button type="button" class="btn btn-primary" ng-click="clickBtRefreshState()">Refresh state</button>
-
-              <button type="button" class="btn btn-primary" ng-click="clickBtSendBadPacket()">Send Bad packet</button>
 
               <button type="button" class="btn btn-primary hidden">Open event window</button>
             </div>
@@ -79,13 +78,15 @@
           <!-- /.row -->
           <div class="row" style="padding-top: 15px">
             <div class="col-lg-12">
-              <button type="button" class="btn btn-info" ng-click="showDialogSmppConfigure()">Configure</button>
+              <button type="button" class="btn btn-primary" ng-click="clickBtRefreshState()">Refresh state</button>
 
             </div>
           </div>
           <!-- /.row -->
           <div class="row" style="padding-top: 15px">
             <div class="col-lg-12">
+              <button type="button" class="btn btn-primary" ng-click="clickBtSendBadPacket()">Send Bad packet</button>
+
               <button type="button" class="btn btn-primary" ng-click="clickBtSubmitMessage()">Submit a message</button>
             </div>
           </div>
@@ -94,7 +95,8 @@
             <div class="col-lg-12">
               <div class="radio">
                 <label>
-                  <input type="radio" ng-model="isRandomBulkMessages" value="true">
+                  <input type="radio" ng-model="isRandomBulkMessages"
+                         data-ng-value="true">
                   Random bulk messages
                 </label>
               </div>
@@ -102,11 +104,12 @@
 
           </div>
           <!-- /.row -->
-          <div class="row" style="padding-top: 15px">
+          <div class="row" style="padding-top: 15px" id="divPortPacpParsing">
             <div class="col-lg-4">
               <div class="radio">
                 <label>
-                  <input type="radio" ng-model="isRandomBulkMessages" value="false">
+                  <input type="radio" ng-model="isRandomBulkMessages"
+                         data-ng-value="false">
                   Bulk messages from pcap file
                 </label>
               </div>
@@ -114,14 +117,14 @@
             <div class="col-lg-4">
               <div class="form-group input-group">
                 <span class="input-group-addon">TCP Port for pcap parsing</span>
-                <input type="text" ng-model="portForPcapParsing" ng-disabled="!isRandomBulkMessages"
-                       class="form-control integer">
+                <input type="text" ng-model="portForPcapParsing" ng-disabled="isRandomBulkMessages"
+                       class="form-control  required integer">
               </div>
             </div>
             <div class="col-lg-4">
-              <button type="button" class="btn btn-primary"
-                      ng-disabled="!isRandomBulkMessages"
-                      ngf-select ng-model="files" ngf-multiple="false"
+              <button type="button" class="btn btn-primary" id="buttonChosePacpFile"
+                      ng-disabled="isRandomBulkMessages"
+                      ngf-select ng-model="file" ngf-multiple="false"
                       ngf-max-size="10MB">
                 <i class="fa fa-file" aria-hidden="true"></i> Chose pcap file
               </button>
@@ -130,8 +133,14 @@
           <!-- /.row -->
           <div class="row" style="padding-top: 15px">
             <div class="col-lg-12">
-              <button type="button" class="btn btn-primary">Start bulk sending</button>
-              <button type="button" class="btn btn-primary">Stop bulk sending</button>
+              <button type="button" class="btn btn-primary"
+                      ng-click="clickBtStartBulkSending()">
+                Start bulk sending
+              </button>
+              <button type="button" class="btn btn-primary"
+                      ng-click="clickBtStopBulkSending()">
+                Stop bulk sending
+              </button>
             </div>
           </div>
           <!-- /.row -->
