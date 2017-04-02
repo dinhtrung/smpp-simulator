@@ -81,7 +81,7 @@ import com.myson.smppsimulator.util.CodeStatusUtil;
 import com.myson.smppsimulator.util.Constants;
 import com.myson.smppsimulator.util.StringUtils;
 
-@EnableScheduling
+//@EnableScheduling
 @Service("SmppTestingService")
 public class SmppTestingServiceImpl implements SmppTestingService {
 
@@ -152,17 +152,17 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 		WebSocketStompClient stompClient = new WebSocketStompClient(sockJsClient);
 
 		String url = "ws://{host}:{port}/" + Constants.STOMPENDPOINT;
-		return stompClient.connect(url, headers, new MyHandler(), "localhost", 8080);
+		return stompClient.connect(url, headers, new MyHandler(), "localhost", serverPort);
 	}
 
-	private int count = 1;
-
-	@Scheduled(initialDelay = 10000, fixedRate = 2000)
-	public void scheduledAddMessage() {
-		String s = "debug " + count;
-		addMessage(CodeStatusUtil.ADD_MESSAGE, s, s);
-		count++;
-	}
+//	private int count = 1;
+//
+//	@Scheduled(initialDelay = 10000, fixedRate = 2000)
+//	public void scheduledAddMessage() {
+//		String s = "debug " + count;
+//		addMessage(CodeStatusUtil.ADD_MESSAGE, s, s);
+//		count++;
+//	}
 
 	private void setStompSession() {
 		try {

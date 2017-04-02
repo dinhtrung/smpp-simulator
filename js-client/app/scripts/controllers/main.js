@@ -308,5 +308,8 @@ angular.module('jsClientApp')
         });
       });
     }
-    // connect();
+    if(CONFIG.SERVICE_BASE == '/rs/'){
+      connect();
+    }
+
   });
