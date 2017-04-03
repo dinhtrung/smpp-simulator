@@ -15,7 +15,7 @@ angular.module('jsClientApp')
     $scope.isRandomBulkMessages = true;
     $scope.portForPcapParsing = 2775;
     $scope.file = null;
-
+    $scope.messageState = '';
     // for (var i = 0; i < 200; i++){
     //   var item = {};
     //   item.timeStamp = '207-04-02 03:42:'+i;
@@ -23,10 +23,14 @@ angular.module('jsClientApp')
     //   item.info = 'info'+ i;
     //   $scope.listMessage.push(item);
     // }
+
     $scope.addMessageToList = function (message) {
       if(cF.isNotNull(message)){
         $scope.listMessage.push(message);
-        $scope.$apply();
+        $timeout(function() {
+          $scope.$apply();
+        })
+
       }
 
     };
@@ -37,30 +41,38 @@ angular.module('jsClientApp')
       if (object.codeStatus < 1) {
         cF.showDialogOneBt('ERROR', 'SYSTEM ERROR!', 'btn-danger', 'fa fa-exclamation-triangle', cF.goToLoginScreen);
       } else {
-        $scope.addMessageToList(result);
-        switch (result.codeStatus) {
+
+        switch (object.codeStatus) {
           //ADD_MESSAGE = 1;
           case 1:
+            $scope.addMessageToList(result);
             break;
           //REFRESH_STATE = 2;
           case 2:
+            $scope.messageState = result.info;
+            // $scope.addMessageToList(result);
             break;
           // SESSION_START_FALSE = 3;
           case 3:
+            $scope.addMessageToList(result);
             $scope.isStartSession = false;
             break;
           //SESSION_START_SUCCESS = 4;
           case 4:
+            $scope.addMessageToList(result);
             $scope.isStartSession = true;
             break;
           //SESSION_STOP = 5;
           case 5:
+            $scope.addMessageToList(result);
             $scope.isStartSession = false;
             break;
           // MESSAGE_SUBMIT_FALSE = 6;
           case 6:
+            $scope.addMessageToList(result);
             break;
           default:
+            $scope.addMessageToList(result);
             break;
         }
       }
@@ -97,7 +109,7 @@ angular.module('jsClientApp')
       smppTestingService.refreshState().then(
         function (data) {
           cF.closeWaitingDialog();
-          //TODO ....
+          $scope.commonGetResult(data.data);
         }, function (error) {
           $log.error(error);
           cF.showDialogSystemError();

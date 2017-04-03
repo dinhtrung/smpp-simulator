@@ -18,42 +18,49 @@
         <!-- /.panel-heading -->
         <div class="panel-body">
           <div class="row">
-            <div class="panel panel-default">
-              <div class="panel-body">
-                <div class="col-lg-12">
-                  <div class="heading box_heading hidden-xs hidden-sm col-md-2 col-lg-2">
-                    TimeStamp
+            <div class="col-lg-12">
+              <div class="panel panel-default">
+                <div class="panel-body padding_l_r_0" style="padding-top: 0px">
+                  <div class="col-lg-12 padding_l_r_0">
+                    <div class="heading box_heading hidden-xs hidden-sm col-md-2 col-lg-2">
+                      TimeStamp
+                    </div>
+                    <div class="heading box_heading padding_l15_r0 border-left-white col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                      Message
+                    </div>
+                    <div
+                      class="heading box_heading padding_l15_r0 border-left-white  hidden-xs hidden-sm col-md-6 col-lg-6">
+                      UserData
+                    </div>
                   </div>
-                  <div class="heading box_heading padding_l15_r0 border-left-white col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                    Message
+                  <!-- /.col-lg-12 -->
+                  <div class="col-lg-12 grow padding_l_r_0" style="overflow-x: auto; max-height: 300px; min-height: 100px">
+                    <div
+                      ng-repeat="item in listMessage"
+                      class="col-lg-12  row_box cursor_pointer break-word"
+                      ng-click="showDialogSmmMessage(item)"
+                    >
+                      <div class="padding_l_r_0 hidden-xs hidden-sm col-md-2 col-lg-2">
+                        {{item.timeStamp}}
+                      </div>
+                      <div class="padding_l15_r0 col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                        {{item.msg}}&nbsp;
+                      </div>
+                      <div class="padding_l15_r0 hidden-xs hidden-sm col-md-6 col-lg-6">
+                        {{item.info}}&nbsp;
+                      </div>
+                    </div>
                   </div>
-                  <div
-                    class="heading box_heading padding_l15_r0 border-left-white  hidden-xs hidden-sm col-md-6 col-lg-6">
-                    UserData
-                  </div>
+                  <!-- /.col-lg-12 -->
                 </div>
-                <!-- /.col-lg-12 -->
-                <div class="col-lg-12 grow" style="overflow-x: auto; max-height: 300px; min-height: 100px">
-                  <div
-                    ng-repeat="item in listMessage"
-                    class="col-lg-12  row_box cursor_pointer break-word"
-                    ng-click="showDialogSmmMessage(item)"
-                  >
-                    <div class="padding_l_r_0 hidden-xs hidden-sm col-md-2 col-lg-2">
-                      {{item.timeStamp}}
-                    </div>
-                    <div class="padding_l15_r0 col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                      {{item.msg}}&nbsp;
-                    </div>
-                    <div class="padding_l15_r0 hidden-xs hidden-sm col-md-6 col-lg-6">
-                      {{item.info}}&nbsp;
-                    </div>
-                  </div>
+                <!-- /.panel-body -->
+                <div class="panel-footer">
+                  {{messageState}}&nbsp;
                 </div>
-                <!-- /.col-lg-12 -->
+                <!-- /.panel-footer -->
               </div>
-              <!-- /.panel-body -->
             </div>
+            <!-- /.col-lg-12 -->
           </div>
           <!-- /.row -->
 
@@ -81,6 +88,7 @@
               <button type="button" class="btn btn-primary" ng-click="clickBtRefreshState()">Refresh state</button>
 
             </div>
+
           </div>
           <!-- /.row -->
           <div class="row" style="padding-top: 15px">
