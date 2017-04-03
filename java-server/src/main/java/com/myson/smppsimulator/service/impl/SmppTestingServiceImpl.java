@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -81,7 +82,7 @@ import com.myson.smppsimulator.util.CodeStatusUtil;
 import com.myson.smppsimulator.util.Constants;
 import com.myson.smppsimulator.util.StringUtils;
 
-//@EnableScheduling
+@EnableScheduling
 @Service("SmppTestingService")
 public class SmppTestingServiceImpl implements SmppTestingService {
 
@@ -155,15 +156,6 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 		return stompClient.connect(url, headers, new MyHandler(), "localhost", serverPort);
 	}
 
-//	private int count = 1;
-//
-//	@Scheduled(initialDelay = 10000, fixedRate = 2000)
-//	public void scheduledAddMessage() {
-//		String s = "debug " + count;
-//		addMessage(CodeStatusUtil.ADD_MESSAGE, s, s);
-//		count++;
-//	}
-
 	private void setStompSession() {
 		try {
 			if (stompSession == null) {
@@ -181,12 +173,7 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 
 	public void addMessage(Integer codeStatus, String msg, String info) {
 		try {
-			SmppMessage sms = new SmppMessage();
-			String sDate = StringUtils.convertDateToString(new Date(), Constants.FORMAT_DATE_YYYY_MM_DD_HH_MM_SS);
-			sms.setInfo(info);
-			sms.setMsg(msg);
-			sms.setTimeStamp(sDate);
-			System.out.println("Add sms:\t" + sms);
+			SmppMessage sms = setSmppMessage(msg, info);
 			ResReturnDTO returnDTO = new ResReturnDTO();
 			returnDTO.setCodeStatus(codeStatus);
 			returnDTO.setData(sms);
@@ -203,15 +190,46 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 
 	}
 
-	@Override
-	public ResReturnDTO refreshState() {
-		String message = "messageSegmentsSent=" + this.segmentsSent.get() + ", submitMessagesSent="
+	private SmppMessage setSmppMessage(String msg, String info) throws ParseException {
+		SmppMessage sms = new SmppMessage();
+		String sDate = StringUtils.convertDateToString(new Date(), Constants.FORMAT_DATE_YYYY_MM_DD_HH_MM_SS);
+		sms.setInfo(info);
+		sms.setMsg(msg);
+		sms.setTimeStamp(sDate);
+		System.out.println("Add sms:\t" + sms);
+		return sms;
+	}
+	
+	private String getMessState(){
+		return "messageSegmentsSent=" + this.segmentsSent.get() + ", submitMessagesSent="
 				+ this.messagesSent.get() + ", submitResponsesRcvd=" + this.responsesRcvd.get() + ", messagesRcvd="
 				+ this.messagesRcvd.get();
-		ResReturnDTO returnDTO = new ResReturnDTO();
-		returnDTO.setCodeStatus(CodeStatusUtil.REFRESH_STATE);
-		returnDTO.setMessageStatus(message);
-		return returnDTO;
+	}
+
+	@Scheduled(initialDelay = 10000, fixedRate = 5000)
+	private void scheduledAddMessage() {
+		try {
+//			addMessage(CodeStatusUtil.ADD_MESSAGE, "Message Segment", getMessState());
+			addMessage(CodeStatusUtil.REFRESH_STATE, "Message Segment", getMessState());
+		} catch (Exception e) {
+			logger.error("addMessage", e);
+		}
+		
+	}
+
+	@Override
+	public ResReturnDTO refreshState() {
+		try{
+			SmppMessage sms = setSmppMessage("Message Segment", getMessState());
+			ResReturnDTO returnDTO = new ResReturnDTO();
+			returnDTO.setCodeStatus(CodeStatusUtil.REFRESH_STATE);
+			returnDTO.setData(sms);
+			return returnDTO;
+		}catch (Exception e) {
+			logger.error("addMessage", e);
+			return null;
+		}
+		
 	}
 
 	@Override
