@@ -18,17 +18,9 @@ import com.myson.smppsimulator.util.Constants;
 @Controller
 public class NotifSmppMessageController {
 	
-//	@MessageMapping("/hello")
-//    @SendTo("/socketget/notifsmpp")
-//	public SmppMessage sendNotifSmppMessage(SmppMessage sms) {
-//		System.out.println("Send sms"+sms.getTimeStamp());
-//		return sms;
-//	}
-	
 	@MessageMapping("/"+Constants.STOMPENDPOINT)
     @SendTo(Constants.SIMPLEBROKER+"/notifsmpp")
 	public ResReturnDTO sendNotifSmppMessage(ResReturnDTO sms) {
-		System.out.println("Send sms:\t"+sms.getData());
 		return sms;
 	}
 }

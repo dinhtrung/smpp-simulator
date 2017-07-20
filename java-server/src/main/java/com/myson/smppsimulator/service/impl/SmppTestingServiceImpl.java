@@ -196,7 +196,7 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 		sms.setInfo(info);
 		sms.setMsg(msg);
 		sms.setTimeStamp(sDate);
-		System.out.println("Add sms:\t" + sms);
+		logger.debug("Add sms:\t" + sms);
 		return sms;
 	}
 	
@@ -803,35 +803,11 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 			if (n < 1)
 				n = 1;
 			int j1 = rand.nextInt(n);
-			Integer destAddr = smppParametersService.getCofGeneralParameters().getBulkDestAddressRangeStart() + j1;
-			String destAddrS = destAddr.toString();
-
-			int j2 = rand.nextInt(2);
-			int j3 = rand.nextInt(3);
-			EncodingType encodingType;
-			if (j2 == 0)
-				encodingType = EncodingType.GSM7_DCS_0;
-			else
-				encodingType = EncodingType.UCS2_DCS_8;
-			SplittingType splittingType;
-			switch (j3) {
-			case 0:
-				splittingType = SplittingType.DoNotSplit;
-				break;
-			case 1:
-				splittingType = SplittingType.SplitWithParameters_DefaultSegmentLength;
-				break;
-			default:
-				splittingType = SplittingType.SplitWithUdh_DefaultSegmentLength;
-				break;
-			}
-
-			int j4 = rand.nextInt(5);
+			String destAddrS = smppParametersService.getCofGeneralParameters().getDestAddress();
+			
+			EncodingType encodingType = smppParametersService.getCofGeneralParameters().getEncodingType();
+			SplittingType splittingType = smppParametersService.getCofGeneralParameters().getSplittingType();
 			String msg = smppParametersService.getCofGeneralParameters().getMessageText();
-			if (j4 == 0)
-				msg = bigMessage;
-			msg += " " + ((Integer) messagesNum.incrementAndGet()).toString();
-
 			this.doSubmitMessage(encodingType, 0, msg, splittingType,
 					smppParametersService.getCofGeneralParameters().getValidityType(), destAddrS,
 					smppParametersService.getCofGeneralParameters().getMessagingMode(),
