@@ -199,7 +199,7 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 		logger.debug("Add sms:\t" + sms);
 		return sms;
 	}
-	
+
 	private String getMessState(){
 		return "messageSegmentsSent=" + this.segmentsSent.get() + ", submitMessagesSent="
 				+ this.messagesSent.get() + ", submitResponsesRcvd=" + this.responsesRcvd.get() + ", messagesRcvd="
@@ -214,7 +214,7 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 		} catch (Exception e) {
 			logger.error("addMessage", e);
 		}
-		
+
 	}
 
 	@Override
@@ -229,7 +229,7 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 			logger.error("addMessage", e);
 			return null;
 		}
-		
+
 	}
 
 	@Override
@@ -798,13 +798,13 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 
 		for (int i1 = 0; i1 < smppParametersService.getCofGeneralParameters().getBulkMessagePerSecond()
 				/ threadCount; i1++) {
-			int n = smppParametersService.getCofGeneralParameters().getBulkDestAddressRangeEnd()
-					- smppParametersService.getCofGeneralParameters().getBulkDestAddressRangeStart() + 1;
-			if (n < 1)
-				n = 1;
-			int j1 = rand.nextInt(n);
+			Long n = (smppParametersService.getCofGeneralParameters().getBulkDestAddressRangeEnd()
+					- smppParametersService.getCofGeneralParameters().getBulkDestAddressRangeStart() + 1);
+			if (n < 1L)
+				n = 1L;
+			int j1 = rand.nextInt(n.intValue());
 			String destAddrS = smppParametersService.getCofGeneralParameters().getDestAddress();
-			
+
 			EncodingType encodingType = smppParametersService.getCofGeneralParameters().getEncodingType();
 			SplittingType splittingType = smppParametersService.getCofGeneralParameters().getSplittingType();
 			String msg = smppParametersService.getCofGeneralParameters().getMessageText();

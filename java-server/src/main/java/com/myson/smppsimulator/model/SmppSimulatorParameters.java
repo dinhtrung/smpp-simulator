@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  Copyright 2012. 
+ * TeleStax, Open Source Cloud Communications  Copyright 2012.
  * TeleStax and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -26,9 +26,9 @@ import com.cloudhopper.smpp.SmppBindType;
 import com.cloudhopper.smpp.SmppSession;
 
 /**
- * 
+ *
  * @author sergey vetyutnev
- * 
+ *
  */
 public class SmppSimulatorParameters {
 
@@ -41,7 +41,7 @@ public class SmppSimulatorParameters {
 	private String password = "test";
 	private long requestExpiryTimeout = 30000;
 	private long windowMonitorInterval = 15000;
-	
+
 	private boolean rejectIncomingDeliveryMessage = false;
     private DeliveryResponseGenerating deliveryResponseGenerating = DeliveryResponseGenerating.No;
     private boolean deliveryResponseAfter2Min = false;
@@ -74,8 +74,8 @@ public class SmppSimulatorParameters {
     private int smppEncoding = 0;
     private MessagingMode messagingMode = MessagingMode.storeAndForward;
 
-	private int bulkDestAddressRangeStart = 500000;
-	private int bulkDestAddressRangeEnd = 600000;
+	private long bulkDestAddressRangeStart = 500000;
+	private long bulkDestAddressRangeEnd = 600000;
 	private int bulkMessagePerSecond = 10;
 
 	public int getWindowSize() {
@@ -263,19 +263,19 @@ public class SmppSimulatorParameters {
 		this.rejectIncomingDeliveryMessage = rejectIncomingDeliveryMessage;
 	}
 
-	public int getBulkDestAddressRangeStart() {
+	public long getBulkDestAddressRangeStart() {
 		return bulkDestAddressRangeStart;
 	}
 
-	public void setBulkDestAddressRangeStart(int bulkDestAddressRangeStart) {
+	public void setBulkDestAddressRangeStart(long bulkDestAddressRangeStart) {
 		this.bulkDestAddressRangeStart = bulkDestAddressRangeStart;
 	}
 
-	public int getBulkDestAddressRangeEnd() {
+	public long getBulkDestAddressRangeEnd() {
 		return bulkDestAddressRangeEnd;
 	}
 
-	public void setBulkDestAddressRangeEnd(int bulkDestAddressRangeEnd) {
+	public void setBulkDestAddressRangeEnd(long bulkDestAddressRangeEnd) {
 		this.bulkDestAddressRangeEnd = bulkDestAddressRangeEnd;
 	}
 

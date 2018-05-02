@@ -1,4 +1,4 @@
-FROM anapsix/alpine-java:latest
+FROM openjdk:8-jre-alpine
 
 ENV SPRING_OUTPUT_ANSI_ENABLED=ALWAYS \
     JHIPSTER_SLEEP=0 \
