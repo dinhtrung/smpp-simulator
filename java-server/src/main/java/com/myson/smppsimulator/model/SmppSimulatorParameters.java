@@ -78,6 +78,8 @@ public class SmppSimulatorParameters {
 	private long bulkDestAddressRangeEnd = 600000;
 	private int bulkMessagePerSecond = 10;
 
+	private boolean randomDeliveryReceipt;
+
 	public int getWindowSize() {
 		return windowSize;
 	}
@@ -458,5 +460,12 @@ public class SmppSimulatorParameters {
     public enum DeliveryResponseGenerating {
         No, Success, Error8;
     }
-}
 
+		public boolean isRandomDeliveryReceipt() {
+		return randomDeliveryReceipt;
+	}
+
+	public void setRandomDeliveryReceipt(boolean randomDeliveryReceipt) {
+		this.randomDeliveryReceipt = randomDeliveryReceipt;
+	}
+}

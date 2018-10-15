@@ -29,10 +29,8 @@ angular.module('jsClientApp')
         $scope.listMessage.push(message);
         $timeout(function() {
           $scope.$apply();
-        })
-
+        });
       }
-
     };
 
     $scope.commonGetResult = function (object) {
@@ -320,7 +318,7 @@ angular.module('jsClientApp')
         });
       });
     }
-    if(CONFIG.SERVICE_BASE == '/rs/'){
+    if(CONFIG.SERVICE_BASE === '/rs/'){
       connect();
     }
 

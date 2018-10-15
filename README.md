@@ -5,8 +5,11 @@
 ~~~
 $ cd js-client
 $
+$ # Download library
+$
+$ bower install
 $ # Compile the JS code
-$ grunt --force
+$ grunt --force build
 $
 $ # Copy JS code to server static resources
 $ rsync -avP --delete dist/* ../java-server/src/main/resource/static/

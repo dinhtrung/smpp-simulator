@@ -682,8 +682,12 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 			}
 
 			pdu.setDataCoding((byte) dcs);
-			pdu.setRegisteredDelivery(
-					(byte) smppParametersService.getCofGeneralParameters().getMcDeliveryReceipt().getCode());
+			if (!smppParametersService.getCofGeneralParameters().isRandomDeliveryReceipt() || (Math.random() < 0.5)) {
+				pdu.setRegisteredDelivery(
+						(byte) smppParametersService.getCofGeneralParameters().getMcDeliveryReceipt().getCode());
+			}
+			// pdu.setRegisteredDelivery(
+			// 		(byte) smppParametersService.getCofGeneralParameters().getMcDeliveryReceipt().getCode());
 
 			if (buf.length < 250 && smppParametersService.getCofGeneralParameters()
 					.getSendingMessageType() != SmppSimulatorParameters.SendingMessageType.DataSm)

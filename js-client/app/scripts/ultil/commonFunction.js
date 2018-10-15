@@ -2,7 +2,7 @@
  * Created by ducgiang8888 on 10/2/2015.
  */
 'use strict';
-angular.module('jsClientApp').factory("cF", function ($location, $rootScope, $cookieStore, $http, $log, CONFIG) {
+angular.module('jsClientApp').factory("cF", function ($location, $rootScope, $http, $log, CONFIG) {
 
   var obj = {};
 
@@ -477,19 +477,19 @@ angular.module('jsClientApp').factory("cF", function ($location, $rootScope, $co
 
   //function for get key to check session
   obj.getKey = function (keyName) {
-    var keyValue = $cookieStore.get(keyName);
+    var keyValue = localStorage.getItem(keyName);
     return keyValue;
   };
 
   //function for set key after login
   obj.setKey = function (keyName, keyValue) {
-    $cookieStore.remove(keyName);
-    $cookieStore.put(keyName, keyValue);
+    localStorage.removeItem(keyName);
+    localStorage.setItem(keyName, keyValue);
   };
 
   //function for remove key after login
   obj.removeKey = function (keyName) {
-    $cookieStore.remove(keyName);
+    localStorage.removeItem(keyName);
   };
 
   obj.saveInfoLogin = function(infLogin){
@@ -647,7 +647,7 @@ angular.module('jsClientApp').factory("cF", function ($location, $rootScope, $co
 
       if (sFormat === 'dd-MMM-yyyy' || sFormat === 'dd-mm-yyyy') {
          sSplit = sDate.split('-');
-        if (sSplit.length == 3) {
+        if (sSplit.length === 3) {
            date = new Date();
 
            month = parseInt(sSplit[1]) - 1;

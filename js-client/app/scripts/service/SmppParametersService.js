@@ -2,7 +2,7 @@
  * Created by GiangDD on 3/26/2017.
  */
 'use strict';
-angular.module('jsClientApp').factory("smppParametersService", function ($http, $rootScope, CONFIG, cF) {
+angular.module('jsClientApp').factory("smppParametersService", function ($http, $rootScope, CONFIG) {
 
   //service for get config SMPP
   var obj = {};
