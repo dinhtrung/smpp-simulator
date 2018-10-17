@@ -22,6 +22,8 @@
 
 package com.myson.smppsimulator.model;
 
+import java.util.List;
+
 import com.cloudhopper.smpp.SmppBindType;
 import com.cloudhopper.smpp.SmppSession;
 
@@ -78,6 +80,9 @@ public class SmppSimulatorParameters {
 	private long bulkDestAddressRangeEnd = 600000;
 	private int bulkMessagePerSecond = 10;
 
+	// Extra parameters
+	private List<TlvDTO> tlvList;
+	private boolean useSsl;
 	private boolean randomDeliveryReceipt;
 
 	public int getWindowSize() {
@@ -467,5 +472,21 @@ public class SmppSimulatorParameters {
 
 	public void setRandomDeliveryReceipt(boolean randomDeliveryReceipt) {
 		this.randomDeliveryReceipt = randomDeliveryReceipt;
+	}
+
+	public List<TlvDTO> getTlvList() {
+		return tlvList;
+	}
+
+	public void setTlvList(List<TlvDTO> tlvList) {
+		this.tlvList = tlvList;
+	}
+
+	public boolean isUseSsl() {
+		return useSsl;
+	}
+
+	public void setUseSsl(boolean useSsl) {
+		this.useSsl = useSsl;
 	}
 }

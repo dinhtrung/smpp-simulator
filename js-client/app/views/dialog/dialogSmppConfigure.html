@@ -29,6 +29,9 @@
               <li ng-class="{'active': nameTabActive=='Bulk'}"
                   ng-click="changeTabName('Bulk')"><a href="" data-toggle="tab">Bulk</a>
               </li>
+              <li ng-class="{'active': nameTabActive=='Tlv'}"
+                  ng-click="changeTabName('Tlv')"><a href="" data-toggle="tab">Tlv</a>
+              </li>
             </ul>
 
             <!-- Tab panes -->
@@ -409,6 +412,24 @@
                 </div>
                 <!-- /.row -->
 
+              </div>
+              <div class="tab-pane fade" ng-class="{' in active': nameTabActive=='Tlv'}" id="Tlv">
+                <table class="table">
+                  <thead><tr>
+                    <th>Tag Name</th>
+                    <th>Value</th>
+                    <th><button type="button" class="btn btn-primary btn-sm" ng-click="addTlv()">Add Tlv</button></th>
+                  </tr></thead>
+                  <tbody>
+                    <tr ng-repeat="tlv in smppCof.tlvList">
+                      <td><select class="form-control" name="smppSessionType" id="smppCof_smppSessionType" ng-model="tlv.tag">
+                          <option ng-repeat="t in listTlv" value="{{ t.tag | lowercase }}">{{ t.tagName }}</option>
+                        </select> </td>
+                        <td><input class="form-control" ng-model="tlv.value"></td>
+                        <th><button type="button" class="btn btn-primary btn-sm" ng-click="removeTlv(tlv)">Remove</button></th>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>

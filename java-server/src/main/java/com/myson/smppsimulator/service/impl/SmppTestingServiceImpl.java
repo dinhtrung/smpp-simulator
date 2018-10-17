@@ -66,6 +66,7 @@ import com.cloudhopper.smpp.tlv.Tlv;
 import com.cloudhopper.smpp.type.Address;
 import com.cloudhopper.smpp.type.SmppChannelException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.myson.smppsimulator.model.TlvDTO;
 import com.myson.smppsimulator.model.ResReturnDTO;
 import com.myson.smppsimulator.model.SmppMessage;
 import com.myson.smppsimulator.model.SmppSimulatorParameters;
@@ -404,13 +405,15 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 				smppParametersService.getCofGeneralParameters().getValidityType(),
 				smppParametersService.getCofGeneralParameters().getDestAddress(),
 				smppParametersService.getCofGeneralParameters().getMessagingMode(),
-				smppParametersService.getCofGeneralParameters().getSpecifiedSegmentLength());
+				smppParametersService.getCofGeneralParameters().getSpecifiedSegmentLength(),
+				smppParametersService.getCofGeneralParameters().getTlvList()
+				);
 		return null;
 	}
 
 	private void doSubmitMessage(EncodingType encodingType, int messageClass, String messageText,
 			SplittingType splittingType, ValidityType validityType, String destAddr,
-			SmppSimulatorParameters.MessagingMode messagingMode, int specifiedSegmentLength) {
+			SmppSimulatorParameters.MessagingMode messagingMode, int specifiedSegmentLength, List<TlvDTO> tlvList) {
 		if (session0 == null)
 			return;
 
@@ -550,7 +553,7 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 			esmClass |= messagingMode.getCode();
 
 			this.doSubmitMessage(dcs, msgLst, msgRef, addSegmTlv, esmClass, validityType, segmCnt, destAddr,
-					messageClassVal);
+					messageClassVal, tlvList);
 		} catch (Exception e) {
 			this.addMessage(CodeStatusUtil.MESSAGE_SUBMIT_FALSE, "Failure to submit message", e.toString());
 			logger.error("SmppTestingServiceImpl", e);
@@ -597,7 +600,7 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 
 	@SuppressWarnings({ "rawtypes", "incomplete-switch" })
 	private void doSubmitMessage(int dcs, ArrayList<byte[]> msgLst, int msgRef, boolean addSegmTlv, int esmClass,
-			SmppSimulatorParameters.ValidityType validityType, int segmentCnt, String destAddr, int messageClassVal)
+			SmppSimulatorParameters.ValidityType validityType, int segmentCnt, String destAddr, int messageClassVal, List<TlvDTO> tlvList)
 			throws Exception {
 		int i1 = 0;
 		for (byte[] buf : msgLst) {
@@ -815,7 +818,9 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 			this.doSubmitMessage(encodingType, 0, msg, splittingType,
 					smppParametersService.getCofGeneralParameters().getValidityType(), destAddrS,
 					smppParametersService.getCofGeneralParameters().getMessagingMode(),
-					smppParametersService.getCofGeneralParameters().getSpecifiedSegmentLength());
+					smppParametersService.getCofGeneralParameters().getSpecifiedSegmentLength(),
+					smppParametersService.getCofGeneralParameters().getTlvList()
+					);
 		}
 	}
 
