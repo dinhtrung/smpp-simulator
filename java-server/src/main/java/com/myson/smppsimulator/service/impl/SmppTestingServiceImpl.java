@@ -19,6 +19,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import org.apache.commons.codec.binary.Hex;
 
 import javax.annotation.PostConstruct;
 
@@ -689,9 +690,12 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 				pdu.setRegisteredDelivery(
 						(byte) smppParametersService.getCofGeneralParameters().getMcDeliveryReceipt().getCode());
 			}
-			// pdu.setRegisteredDelivery(
-			// 		(byte) smppParametersService.getCofGeneralParameters().getMcDeliveryReceipt().getCode());
-
+			
+			if (tlvList != null)
+				for (TlvDTO optionalTlv : tlvList) {
+					pdu.addOptionalParameter(new Tlv(Short.decode(optionalTlv.getTag()), Hex.decodeHex(optionalTlv.getValue())));
+				}
+			
 			if (buf.length < 250 && smppParametersService.getCofGeneralParameters()
 					.getSendingMessageType() != SmppSimulatorParameters.SendingMessageType.DataSm)
 				pdu.setShortMessage(buf);
@@ -721,7 +725,7 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 				Tlv tlv = new Tlv(SmppConstants.TAG_DEST_ADDR_SUBUNIT, buf1);
 				pdu.addOptionalParameter(tlv);
 			}
-
+			
 			@SuppressWarnings("unused")
 			WindowFuture<Integer, PduRequest, PduResponse> future0 = session0.sendRequestPdu(pdu, 10000, false);
 
