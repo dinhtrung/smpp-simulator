@@ -6,6 +6,7 @@ import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -19,9 +20,10 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import org.apache.commons.codec.binary.Hex;
+import javax.xml.bind.DatatypeConverter;
 
 import javax.annotation.PostConstruct;
+import javax.swing.text.DateFormatter;
 
 import org.apache.log4j.Logger;
 import org.mobicents.protocols.ss7.map.api.smstpdu.DataCodingScheme;
@@ -82,7 +84,6 @@ import com.myson.smppsimulator.testsmpp.TestSmppClient;
 import com.myson.smppsimulator.testsmpp.TestSmppSession;
 import com.myson.smppsimulator.util.CodeStatusUtil;
 import com.myson.smppsimulator.util.Constants;
-import com.myson.smppsimulator.util.StringUtils;
 
 @EnableScheduling
 @Service("SmppTestingService")
@@ -191,10 +192,12 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 		}
 
 	}
+	
+	private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(Constants.FORMAT_DATE_YYYY_MM_DD_HH_MM_SS);
 
 	private SmppMessage setSmppMessage(String msg, String info) throws ParseException {
 		SmppMessage sms = new SmppMessage();
-		String sDate = StringUtils.convertDateToString(new Date(), Constants.FORMAT_DATE_YYYY_MM_DD_HH_MM_SS);
+		String sDate = simpleDateFormat.format(new Date());
 		sms.setInfo(info);
 		sms.setMsg(msg);
 		sms.setTimeStamp(sDate);
@@ -690,10 +693,12 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 				pdu.setRegisteredDelivery(
 						(byte) smppParametersService.getCofGeneralParameters().getMcDeliveryReceipt().getCode());
 			}
-			
+			// Add Service Type
+			pdu.setServiceType(smppParametersService.getCofGeneralParameters().getServiceType());
+			// Add TLV 
 			if (tlvList != null)
 				for (TlvDTO optionalTlv : tlvList) {
-					pdu.addOptionalParameter(new Tlv(Short.decode(optionalTlv.getTag()), Hex.decodeHex(optionalTlv.getValue())));
+					pdu.addOptionalParameter(new Tlv(Short.decode(optionalTlv.getTag()), DatatypeConverter.parseHexBinary(optionalTlv.getValue())));
 				}
 			
 			if (buf.length < 250 && smppParametersService.getCofGeneralParameters()
@@ -800,20 +805,13 @@ public class SmppTestingServiceImpl implements SmppTestingService {
 		return null; // TODO
 	}
 
-	private String bigMessage = "01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789";
-	private AtomicInteger messagesNum = new AtomicInteger();
-
 	private void doSendRandomSmppMessages() {
-
-		Random rand = new Random();
-
 		for (int i1 = 0; i1 < smppParametersService.getCofGeneralParameters().getBulkMessagePerSecond()
 				/ threadCount; i1++) {
 			Long n = (smppParametersService.getCofGeneralParameters().getBulkDestAddressRangeEnd()
 					- smppParametersService.getCofGeneralParameters().getBulkDestAddressRangeStart() + 1);
 			if (n < 1L)
 				n = 1L;
-			int j1 = rand.nextInt(n.intValue());
 			String destAddrS = smppParametersService.getCofGeneralParameters().getDestAddress();
 
 			EncodingType encodingType = smppParametersService.getCofGeneralParameters().getEncodingType();

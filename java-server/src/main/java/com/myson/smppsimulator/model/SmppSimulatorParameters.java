@@ -84,6 +84,7 @@ public class SmppSimulatorParameters {
 	private List<TlvDTO> tlvList;
 	private boolean useSsl;
 	private boolean randomDeliveryReceipt;
+	private String serviceType;
 
 	public int getWindowSize() {
 		return windowSize;
@@ -488,5 +489,13 @@ public class SmppSimulatorParameters {
 
 	public void setUseSsl(boolean useSsl) {
 		this.useSsl = useSsl;
+	}
+
+	public String getServiceType() {
+		return serviceType;
+	}
+
+	public void setServiceType(String serviceType) {
+		this.serviceType = serviceType;
 	}
 }
