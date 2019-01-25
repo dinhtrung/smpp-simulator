@@ -12,7 +12,7 @@ $ # Compile the JS code
 $ grunt --force build
 $
 $ # Copy JS code to server static resources
-$ rsync -avP --delete dist/* ../java-server/src/main/resource/static/
+$ rsync -avP --delete dist/* ../java-server/src/main/resources/static/
 $
 $ # Package java code
 $ cd ../java-server
