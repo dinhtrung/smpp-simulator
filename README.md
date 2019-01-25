@@ -6,7 +6,7 @@
 $ cd js-client
 $
 $ # Download library
-$
+$ npm install
 $ bower install
 $ # Compile the JS code
 $ grunt --force build
