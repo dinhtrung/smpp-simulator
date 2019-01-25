@@ -23,4 +23,8 @@ $ docker build . -t registry.gitlab.com/adsmife/myson/smpp-simulator
 $
 $ # Push to gitlab registry
 $ docker push registry.gitlab.com/adsmife/myson/smpp-simulator
-~~~
+$
+$ #run smpp simulator locally  
+$ docker run -p 28080:8080 registry.gitlab.com/adsmife/myson/smpp-simulator
+$
+$ Smpp simulator - http://localhost:28080/#!/
